@@ -21,7 +21,7 @@ import * as child_process from 'child_process';
 
 // CVC4 arguments
 
-const cvc4Arguments : string[] = ['--lang',  'smt', '--preprocess-only'];
+const cvc4Arguments : string[] = ['--lang',  'cvc4', '--incremental','--parse-only'];
 const cvc4Executable: string = 'C:\\temp\\smt\\cvc4.exe';
 
 // Create a connection for the server. The connection uses Node's IPC as a transport.
@@ -134,56 +134,50 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
     
     child.stdin.setDefaultEncoding('utf-8');
     
-    child.stdin.write("(set-logic ALL)\n(check-sat)\n");
+    child.stdin.write(textDocument.getText());
 
-    child.stdout.on('data', (data) => {
-        console.log(`child stdout:\n${data}`);
-      });
+    // child.stdout.on('data', (data) => checkOutput(textDocument, data));      
+    child.stderr.on('data', (data) => checkOutput(textDocument, data));      
+}
 
-    // In this simple example we get the settings for every validate run.
-    let settings = await getDocumentSettings(textDocument.uri);
-    console.log(settings);
-    // The validator creates diagnostics for all uppercase words length 2 and more
-    let text = textDocument.getText();
-    let pattern = /\b[A-Z]{2,}\b/g;
-    let m: RegExpExecArray | null;
+function checkOutput(textDocument: TextDocument, data)
+{    
+    console.log(`child stdout:\n${data}`);    
 
-    let problems = 0;
-    let diagnostics: Diagnostic[] = [];
-    while ((m = pattern.exec(text)) && problems < settings.maxNumberOfProblems) {
-        problems++;
-        let diagnostic: Diagnostic = {
-            severity: DiagnosticSeverity.Error,
-            range: {
-                start: textDocument.positionAt(m.index),
-                end: textDocument.positionAt(m.index + m[0].length)
-            },
-            message: `${m[0]} is all uppercase.`,
-            source: 'ex'
-        };
-        if (hasDiagnosticRelatedInformationCapability) {
-            diagnostic.relatedInformation = [
-                {
-                    location: {
-                        uri: textDocument.uri,
-                        range: Object.assign({}, diagnostic.range)
-                    },
-                    message: 'Spelling matters'
+    var smtLibPattern = /Parse Error: <stdin>:\d+.\d+:.*/g;
+    var parseErrors = data.match(smtLibPattern);
+    
+    if(parseErrors && parseErrors.length > 0)
+    {
+        let diagnostics: Diagnostic[] = [];
+        for(let parseError of parseErrors){
+
+            // example "Parse Error: /code.txt:10.7: Unexpected token: '('."
+            var parts = parseError.split(':');
+            var numbers = parts[2].split('.');
+
+            var error = {};
+
+            let lineNumber = parseInt(numbers[0]);
+            let columnNumber = parseInt(numbers[1]);
+            let message = parts.slice(3, parts.length).join('').trim();
+
+            let diagnostic: Diagnostic = {
+                severity: DiagnosticSeverity.Error,
+                range: {
+                    start: textDocument.positionAt(columnNumber),
+                    end: textDocument.positionAt(columnNumber + 1)
                 },
-                {
-                    location: {
-                        uri: textDocument.uri,
-                        range: Object.assign({}, diagnostic.range)
-                    },
-                    message: 'Particularly for names'
-                }
-            ];
-        }
-        diagnostics.push(diagnostic);
-    }
+                message: message,
+                source: 'Parse'
+            };
 
-    // Send the computed diagnostics to VSCode.
-    connection.sendDiagnostics({ uri: textDocument.uri, diagnostics });
+            diagnostics.push(diagnostic);
+        }
+        
+        // Send the computed diagnostics to VSCode.
+        connection.sendDiagnostics({ uri: textDocument.uri, diagnostics });
+    }     
 }
 
 connection.onDidChangeWatchedFiles(_change => {
