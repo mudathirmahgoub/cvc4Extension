@@ -1,0 +1,18 @@
+{
+    "name": "cvc4-server",
+    "description": "CVC4 server",
+    "version": "1.0.0",
+    "author": "University of Iowa",
+    "license": "MIT",
+    "engines": {
+        "node": "*"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/mudathirmahgoub/cvc4extension"
+    },
+    "dependencies": {
+        "vscode-languageserver": "^4.1.3"
+    },
+    "scripts": {}
+}
