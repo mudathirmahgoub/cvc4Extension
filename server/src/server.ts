@@ -131,56 +131,55 @@ documents.onDidChangeContent(change => {
 
 async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 
-    var child : child_process.ChildProcess = child_process.execFile(cvc4Executable, cvc4Arguments);
-    
-    child.stdin.setDefaultEncoding('utf-8');
-    
-    child.stdin.write(textDocument.getText());
     cvc4ErrorOutput = [];
-    
+
+    var child : child_process.ChildProcess = child_process.execFile(cvc4Executable, cvc4Arguments);        
+    child.stdin.setDefaultEncoding('utf-8');    
     child.stderr.on('data', (data) =>{cvc4ErrorOutput.push(data.toString());});      
-    child.on('exit', (data) => checkOutput(textDocument));          
-    child.disconnect();
+    child.stdin.write(textDocument.getText());
+    child.stdin.end();
+    child.on('exit', (data) => checkOutput(textDocument));              
     function checkOutput(textDocument: TextDocument)
-{    
-    let data = cvc4ErrorOutput.join('');
-    console.log(`child stdout: \n${data}\n`);    
-
-    var smtLibPattern = /Parse Error: <stdin>:\d+.\d+:.*/g;
-    var parseErrors = data.match(smtLibPattern);
-    
-    if(parseErrors && parseErrors.length > 0)
-    {
+    {           
         let diagnostics: Diagnostic[] = [];
-        for(let parseError of parseErrors){
+        let data = cvc4ErrorOutput.join('');
+        console.log(`child stdout: \n${data}\n`);    
 
-            // example "Parse Error: /code.txt:10.7: Unexpected token: '('."
-            var parts = parseError.split(':');
-            var numbers = parts[2].split('.');
+        var smtLibPattern = /Parse Error: <stdin>:\d+.\d+:.*/g;
+        var parseErrors = data.match(smtLibPattern);
+        
+        if(parseErrors && parseErrors.length > 0)
+        {
+            
+            for(let parseError of parseErrors){
 
-            var error = {};
+                // example "Parse Error: /code.txt:10.7: Unexpected token: '('."
+                var parts = parseError.split(':');
+                var numbers = parts[2].split('.');
 
-            let lineNumber = parseInt(numbers[0]);
-            let columnNumber = parseInt(numbers[1]);
-            let message = parts.slice(3, parts.length).join('').trim();
+                var error = {};
 
-            let diagnostic: Diagnostic = {
-                severity: DiagnosticSeverity.Error,
-                range: {
-                    start: {line: lineNumber, character: columnNumber-1},
-                    end: {line: lineNumber, character: columnNumber1},                   
-                },
-                message: message,
-                source: 'Parse'
-            };
+                let lineNumber = parseInt(numbers[0]);
+                let columnNumber = parseInt(numbers[1]);
+                let message = parts.slice(3, parts.length).join('').trim();
 
-            diagnostics.push(diagnostic);
+                let diagnostic: Diagnostic = {
+                    severity: DiagnosticSeverity.Error,
+                    range: {
+                        start: {line: lineNumber, character: columnNumber-1},
+                        end: {line: lineNumber, character: columnNumber+1},                   
+                    },
+                    message: message,
+                    source: 'Parse'
+                };
+
+                diagnostics.push(diagnostic);                
+            }
         }
         
         // Send the computed diagnostics to VSCode.
-        connection.sendDiagnostics({ uri: textDocument.uri, diagnostics });
-    }     
-}
+        connection.sendDiagnostics({ uri: textDocument.uri, diagnostics });     
+    }
 }
 
 
