@@ -17,12 +17,46 @@ import {
     TextDocumentPositionParams
 } from 'vscode-languageserver';
 
+// for running cvc4 as a child process
 import * as child_process from 'child_process';
+// for reading cvc4 settings from a json file
+import * as fs from 'fs';
 
-// CVC4 arguments
+interface CVC4Settings {
+    cvc4Executable: string;
+    cvc4Arguments: string[];
+    isVerbose: boolean;
+}
 
-const cvc4Arguments : string[] = ['--lang',  'cvc4', '--incremental','--parse-only'];
-const cvc4Executable: string = 'C:\\temp\\smt\\cvc4.exe';
+let cvc4Settings : CVC4Settings;
+
+try{
+    cvc4Settings = JSON.parse(fs.readFileSync('.vscode/cvc4-settings.json', 'utf8'));
+    // add parse only to the arguments list if it doesn't include it
+    if (cvc4Settings.cvc4Arguments.indexOf('--parse-only') > -1){
+        cvc4Settings.cvc4Arguments.push('--parse-only');
+    }
+}
+catch(error){
+    // create a json file for cvc4 settings
+    let isWindows: boolean = process.platform === "win32";
+    let cvc4Executable: string;
+    
+    if(isWindows){
+        cvc4Executable = 'cvc4.exe';
+    }
+    else{
+        cvc4Executable = 'cvc4.exe';
+    }    
+
+    // default CVC4 arguments
+    const cvc4Arguments : string[] = ['--lang',  'cvc4', '--incremental','--parse-only'];
+    cvc4Settings = {cvc4Executable: cvc4Executable, cvc4Arguments: cvc4Arguments, isVerbose: false};
+    let json = JSON.stringify(cvc4Settings,null, 4);
+    fs.writeFile('.vscode/cvc4-settings.json', json, 'utf8', () => {});
+}
+
+
 let cvc4ErrorOutput: string[] = [];
 
 // Create a connection for the server. The connection uses Node's IPC as a transport.
@@ -133,41 +167,45 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 
     cvc4ErrorOutput = [];
 
-    var child : child_process.ChildProcess = child_process.execFile(cvc4Executable, cvc4Arguments);        
+    var child : child_process.ChildProcess = child_process.execFile(cvc4Settings.cvc4Executable, cvc4Settings.cvc4Arguments);        
     child.stdin.setDefaultEncoding('utf-8');    
+    child.stdout.on('data', (data) =>{cvc4ErrorOutput.push(data.toString());});
     child.stderr.on('data', (data) =>{cvc4ErrorOutput.push(data.toString());});      
-    child.stdin.write(textDocument.getText());
+    child.stdin.write(textDocument.getText() + '\n');
     child.stdin.end();
     child.on('exit', (data) => checkOutput(textDocument));              
     function checkOutput(textDocument: TextDocument)
     {           
         let diagnostics: Diagnostic[] = [];
-        let data = cvc4ErrorOutput.join('');
-        console.log(`child stdout: \n${data}\n`);    
+        let data = cvc4ErrorOutput.join('');        
 
+        // example "Parse Error: <stdin>:10.7: Unexpected token: '('."
         var smtLibPattern = /Parse Error: <stdin>:\d+.\d+:.*/g;
         var parseErrors = data.match(smtLibPattern);
         
         if(parseErrors && parseErrors.length > 0)
-        {
-            
-            for(let parseError of parseErrors){
-
-                // example "Parse Error: /code.txt:10.7: Unexpected token: '('."
+        {            
+            for(let parseError of parseErrors){                                
                 var parts = parseError.split(':');
-                var numbers = parts[2].split('.');
-
-                var error = {};
+                var numbers = parts[2].split('.');               
 
                 let lineNumber = parseInt(numbers[0]);
                 let columnNumber = parseInt(numbers[1]);
-                let message = parts.slice(3, parts.length).join('').trim();
+
+                // for now cvc4 only outputs only one parsing error at a time
+                let message: string;
+                if(cvc4Settings.isVerbose){
+                    message = data;
+                }
+                else {
+                    message = data.replace(/Parse Error: <stdin>:\d+.\d+:/g, 'Parse Error: ');
+                }
 
                 let diagnostic: Diagnostic = {
                     severity: DiagnosticSeverity.Error,
                     range: {
-                        start: {line: lineNumber, character: columnNumber-1},
-                        end: {line: lineNumber, character: columnNumber+1},                   
+                        start: {line: lineNumber, character: columnNumber},
+                        end: {line: lineNumber, character: columnNumber},                   
                     },
                     message: message,
                     source: 'Parse'
@@ -176,7 +214,7 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
                 diagnostics.push(diagnostic);                
             }
         }
-        
+
         // Send the computed diagnostics to VSCode.
         connection.sendDiagnostics({ uri: textDocument.uri, diagnostics });     
     }
