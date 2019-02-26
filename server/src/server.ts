@@ -140,6 +140,7 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
     
     child.stderr.on('data', (data) =>{cvc4ErrorOutput.push(data.toString());});      
     child.on('exit', (data) => checkOutput(textDocument));          
+    child.disconnect();
     function checkOutput(textDocument: TextDocument)
 {    
     let data = cvc4ErrorOutput.join('');
@@ -166,8 +167,8 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
             let diagnostic: Diagnostic = {
                 severity: DiagnosticSeverity.Error,
                 range: {
-                    start: textDocument.positionAt(columnNumber),
-                    end: textDocument.positionAt(columnNumber + 1)
+                    start: {line: lineNumber, character: columnNumber-1},
+                    end: {line: lineNumber, character: columnNumber1},                   
                 },
                 message: message,
                 source: 'Parse'
