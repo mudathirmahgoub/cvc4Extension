@@ -23,6 +23,7 @@ import * as child_process from 'child_process';
 
 const cvc4Arguments : string[] = ['--lang',  'cvc4', '--incremental','--parse-only'];
 const cvc4Executable: string = 'C:\\temp\\smt\\cvc4.exe';
+let cvc4ErrorOutput: string[] = [];
 
 // Create a connection for the server. The connection uses Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
@@ -135,14 +136,14 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
     child.stdin.setDefaultEncoding('utf-8');
     
     child.stdin.write(textDocument.getText());
-
-    // child.stdout.on('data', (data) => checkOutput(textDocument, data));      
-    child.stderr.on('data', (data) => checkOutput(textDocument, data));      
-}
-
-function checkOutput(textDocument: TextDocument, data)
+    cvc4ErrorOutput = [];
+    
+    child.stderr.on('data', (data) =>{cvc4ErrorOutput.push(data.toString());});      
+    child.on('exit', (data) => checkOutput(textDocument));          
+    function checkOutput(textDocument: TextDocument)
 {    
-    console.log(`child stdout:\n${data}`);    
+    let data = cvc4ErrorOutput.join('');
+    console.log(`child stdout: \n${data}\n`);    
 
     var smtLibPattern = /Parse Error: <stdin>:\d+.\d+:.*/g;
     var parseErrors = data.match(smtLibPattern);
@@ -179,6 +180,9 @@ function checkOutput(textDocument: TextDocument, data)
         connection.sendDiagnostics({ uri: textDocument.uri, diagnostics });
     }     
 }
+}
+
+
 
 connection.onDidChangeWatchedFiles(_change => {
     // Monitored files have change in VSCode
