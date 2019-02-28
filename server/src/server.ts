@@ -40,14 +40,8 @@ try{
 catch(error){
     // create a json file for cvc4 settings
     let isWindows: boolean = process.platform === "win32";
-    let cvc4Executable: string;
-    
-    if(isWindows){
-        cvc4Executable = 'cvc4.exe';
-    }
-    else{
-        cvc4Executable = 'cvc4.exe';
-    }    
+    let cvc4Executable: string;    
+    cvc4Executable = 'cvc4';       
 
     // default CVC4 arguments
     const cvc4Arguments : string[] = ['--lang',  'cvc4', '--incremental','--parse-only'];
@@ -167,7 +161,7 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 
     cvc4ErrorOutput = [];
 
-    var child : child_process.ChildProcess = child_process.execFile(cvc4Settings.cvc4Executable, cvc4Settings.cvc4Arguments);        
+    var child : child_process.ChildProcess = child_process.spawn(cvc4Settings.cvc4Executable, cvc4Settings.cvc4Arguments);
     child.stdin.setDefaultEncoding('utf-8');    
     child.stdout.on('data', (data) =>{cvc4ErrorOutput.push(data.toString());});
     child.stderr.on('data', (data) =>{cvc4ErrorOutput.push(data.toString());});      
