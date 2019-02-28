@@ -36,7 +36,7 @@
 						}
 					},
 					"match": "\\b(0|[1-9]\\d*)(\\.\\d*)\\s*\/\\s*[1-9]\\d*(\\.\\d*)",
-					"name": "constant.other.cvc4"
+					"name": "constant.language.cvc4"
 				},
 				{
 					"captures": {
@@ -45,7 +45,7 @@
 						}
 					},
 					"match": "\\b(0|[1-9]\\d*)\\s*\/\\s*[1-9]\\d*(\\.\\d*)",
-					"name": "constant.other.cvc4"
+					"name": "constant.language.cvc4"
 				},
 				{
 					"captures": {
@@ -54,7 +54,7 @@
 						}
 					},
 					"match": "\\b(0|[1-9]\\d*)(\\.\\d*)\\s*\/\\s*[1-9]\\d*",
-					"name": "constant.other.cvc4"
+					"name": "constant.language.cvc4"
 				},
 				{
 					"captures": {
@@ -63,15 +63,15 @@
 						}
 					},
 					"match": "\\b(0|[1-9]\\d*)\\s*(\/\\s*0(\\.0*)?)\\b",
-					"name": "constant.other.cvc4"
+					"name": "constant.language.cvc4"
 				},
 				{
 					"match": "\\b(0|[1-9]\\d*)\\s*\/\\s*[1-9]\\d*\\b",
-					"name": "constant.other.cvc4"
+					"name": "constant.language.cvc4"
 				},
 				{
 					"match": "\\b(0|[1-9]\\d*)(\\.\\d*|\\b)",
-					"name": "constant.other.cvc4"
+					"name": "constant.language.cvc4"
 				}
 			]
 		},
