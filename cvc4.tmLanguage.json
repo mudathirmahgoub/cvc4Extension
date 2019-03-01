@@ -1,798 +1,1622 @@
 {
-	"fileTypes": [
-		"cvc4"
+	"information_for_contributors": [
+		"This file has been converted from https://github.com/atom/language-cvc/blob/master/grammars/cvc.cson",
+		"If you want to provide a fix or improvement, please create a pull request against the original repository.",
+		"Once accepted there, we are happy to receive an update request."
 	],
-	"name": "CVC4",
+	"version": "https://github.com/atom/language-cvc/commit/f6d349a5ca698be25d3f48511888fe62d158e42c",
+	"name": "cvc",
+	"scopeName": "cvc",
 	"patterns": [
 		{
-			"include": "#comment"
+			"begin": "\\b(package)\\b\\s*",
+			"beginCaptures": {
+				"1": {
+					"name": "keyword.other.package.cvc"
+				}
+			},
+			"end": "\\s*(;)",
+			"endCaptures": {
+				"1": {
+					"name": "punctuation.terminator.cvc"
+				}
+			},
+			"name": "meta.package.cvc",
+			"contentName": "storage.modifier.package.cvc",
+			"patterns": [
+				{
+					"include": "#comments"
+				},
+				{
+					"match": "(?<=\\.)\\s*\\.|\\.(?=\\s*;)",
+					"name": "invalid.illegal.character_not_allowed_here.cvc"
+				},
+				{
+					"match": "(?<!_)_(?=\\s*(\\.|;))|\\b\\d+|-+",
+					"name": "invalid.illegal.character_not_allowed_here.cvc"
+				},
+				{
+					"match": "[A-Z]+",
+					"name": "invalid.deprecated.package_name_not_lowercase.cvc"
+				},
+				{
+					"match": "(?x)\\b(?<!\\$)\n(abstract|assert|boolean|break|byte|case|catch|char|class|\nconst|continue|default|do|double|else|enum|extends|final|\nfinally|float|for|goto|if|implements|import|instanceof|int|\ninterface|long|native|new|package|private|protected|public|\nreturn|short|static|strictfp|super|switch|syncronized|this|\nthrow|throws|transient|try|void|volatile|while|\ntrue|false|null)\\b",
+					"name": "invalid.illegal.character_not_allowed_here.cvc"
+				},
+				{
+					"match": "\\.",
+					"name": "punctuation.separator.cvc"
+				}
+			]
 		},
 		{
-			"include": "#command"
+			"begin": "\\b(import)\\b\\s*\\b(static)?\\b\\s",
+			"beginCaptures": {
+				"1": {
+					"name": "keyword.other.import.cvc"
+				},
+				"2": {
+					"name": "storage.modifier.cvc"
+				}
+			},
+			"end": "\\s*(;)",
+			"endCaptures": {
+				"1": {
+					"name": "punctuation.terminator.cvc"
+				}
+			},
+			"name": "meta.import.cvc",
+			"contentName": "storage.modifier.import.cvc",
+			"patterns": [
+				{
+					"include": "#comments"
+				},
+				{
+					"match": "(?<=\\.)\\s*\\.|\\.(?=\\s*;)",
+					"name": "invalid.illegal.character_not_allowed_here.cvc"
+				},
+				{
+					"match": "(?<!\\.)\\s*\\*",
+					"name": "invalid.illegal.character_not_allowed_here.cvc"
+				},
+				{
+					"match": "(?<!_)_(?=\\s*(\\.|;))|\\b\\d+|-+",
+					"name": "invalid.illegal.character_not_allowed_here.cvc"
+				},
+				{
+					"match": "(?x)\\b(?<!\\$)\n(abstract|assert|boolean|break|byte|case|catch|char|class|\nconst|continue|default|do|double|else|enum|extends|final|\nfinally|float|for|goto|if|implements|import|instanceof|int|\ninterface|long|native|new|package|private|protected|public|\nreturn|short|static|strictfp|super|switch|syncronized|this|\nthrow|throws|transient|try|void|volatile|while|\ntrue|false|null)\\b",
+					"name": "invalid.illegal.character_not_allowed_here.cvc"
+				},
+				{
+					"match": "\\.",
+					"name": "punctuation.separator.cvc"
+				},
+				{
+					"match": "\\*",
+					"name": "variable.language.wildcard.cvc"
+				}
+			]
 		},
 		{
-			"include": "#type_decl"
+			"include": "#comments-cvcdoc"
 		},
 		{
-			"include": "#type_def"
+			"include": "#code"
 		},
 		{
-			"include": "#datatype_def"
-		},
-		{
-			"include": "#symbol_def_or_decl"
+			"include": "#module"
 		}
 	],
 	"repository": {
-		"arith_consts": {
+		"all-types": {
 			"patterns": [
 				{
-					"captures": {
+					"include": "#primitive-arrays"
+				},
+				{
+					"include": "#primitive-types"
+				},
+				{
+					"include": "#object-types"
+				}
+			]
+		},
+		"annotations": {
+			"patterns": [
+				{
+					"begin": "((@)[^\\s(]+)(\\()",
+					"beginCaptures": {
+						"1": {
+							"name": "storage.type.annotation.cvc"
+						},
 						"2": {
-							"name": "invalid.cvc4"
+							"name": "punctuation.definition.annotation.cvc"
 						},
 						"3": {
-							"name": "invalid.cvc4"
+							"name": "punctuation.definition.annotation-arguments.begin.bracket.round.cvc"
 						}
 					},
-					"match": "\\b(0|[1-9]\\d*)(\\.\\d*)\\s*\/\\s*[1-9]\\d*(\\.\\d*)",
-					"name": "constant.language.cvc4"
-				},
-				{
-					"captures": {
-						"2": {
-							"name": "invalid.cvc4"
-						}
-					},
-					"match": "\\b(0|[1-9]\\d*)\\s*\/\\s*[1-9]\\d*(\\.\\d*)",
-					"name": "constant.language.cvc4"
-				},
-				{
-					"captures": {
-						"2": {
-							"name": "invalid.cvc4"
-						}
-					},
-					"match": "\\b(0|[1-9]\\d*)(\\.\\d*)\\s*\/\\s*[1-9]\\d*",
-					"name": "constant.language.cvc4"
-				},
-				{
-					"captures": {
-						"2": {
-							"name": "invalid.cvc4"
-						}
-					},
-					"match": "\\b(0|[1-9]\\d*)\\s*(\/\\s*0(\\.0*)?)\\b",
-					"name": "constant.language.cvc4"
-				},
-				{
-					"match": "\\b(0|[1-9]\\d*)\\s*\/\\s*[1-9]\\d*\\b",
-					"name": "constant.language.cvc4"
-				},
-				{
-					"match": "\\b(0|[1-9]\\d*)(\\.\\d*|\\b)",
-					"name": "constant.language.cvc4"
-				}
-			]
-		},
-		"command": {
-			"patterns": [
-				{
-					"begin": "\\b(CONTINUE|COUNTEREXAMPLE|COUNTERMODEL|POP|PUSH|WHERE)\\b",
-					"beginCaptures": [
-						{
-							"name": "constant.other.cvc4"
-						}
-					],
-					"comment": "Commands with no arguments.",
-					"end": ";"
-				},
-				{
-					"begin": "\\bOPTION\\b",
-					"beginCaptures": [
-						{
-							"name": "constant.other.cvc4"
-						}
-					],
-					"end": ";",
-					"patterns": [
-						{
-							"begin": "\"",
-							"end": "\"",
-							"name": "constant.numeric.cvc4"
-						},
-						{
-							"include": "#integer"
-						}
-					]
-				},
-				{
-					"begin": "\\b(ECHO|INCLUDE|TRACE|UNTRACE)\\b",
-					"beginCaptures": [
-						{
-							"name": "constant.other.cvc4"
-						}
-					],
-					"end": ";",
-					"patterns": [
-						{
-							"begin": "\"",
-							"end": "\"",
-							"name": "constant.numeric.cvc4"
-						}
-					]
-				},
-				{
-					"begin": "\\bPOPTO\\b",
-					"beginCaptures": [
-						{
-							"name": "constant.other.cvc4"
-						}
-					],
-					"end": ";",
-					"patterns": [
-						{
-							"include": "#integer"
-						}
-					]
-				},
-				{
-					"begin": "\\b(ASSERT|QUERY|RESTART|PRINT|TRANSFORM)\\b",
-					"beginCaptures": [
-						{
-							"name": "constant.other.cvc4"
-						}
-					],
-					"end": ";",
-					"patterns": [
-						{
-							"include": "#expr"
-						}
-					]
-				}
-			]
-		},
-		"comment": {
-			"match": "%.*",
-			"name": "comment.cvc4"
-		},
-		"datatype_def": {
-			"begin": "\\b(DATATYPE)\\b",
-			"beginCaptures": {
-				"1": {
-					"name": "keyword.cvc4"
-				}
-			},
-			"comment": "The last line can end with a ','. So we match for an optional 'END'.",
-			"end": "(END)?;",
-			"endCaptures": {
-				"1": {
-					"name": "keyword.cvc4"
-				}
-			},
-			"patterns": [
-				{
-					"begin": "\\b([a-zA-Z]\\w*)\\s*((\\[)\\s*([a-zA-Z]\\w*)(\\s*(,)\\s*([a-zA-Z]\\w*))*\\s*(\\]))?\\s*=",
-					"beginCaptures": {
-						"1": {
-							"name": "support.type.cvc4"
-						},
-						"2": {
-							"name": "keyword.cvc4"
-						}
-					},
-					"comment": "A declaration finishes either by ',' or 'END'.",
-					"end": "(,|(END)){1,1}?",
+					"end": "\\)",
 					"endCaptures": {
-						"2": {
-							"name": "keyword.cvc4"
+						"0": {
+							"name": "punctuation.definition.annotation-arguments.end.bracket.round.cvc"
 						}
 					},
+					"name": "meta.declaration.annotation.cvc",
 					"patterns": [
 						{
-							"include": "#datatype_def_cij"
+							"captures": {
+								"1": {
+									"name": "constant.other.key.cvc"
+								},
+								"2": {
+									"name": "keyword.operator.assignment.cvc"
+								}
+							},
+							"match": "(\\w*)\\s*(=)"
+						},
+						{
+							"include": "#code"
 						}
 					]
+				},
+				{
+					"match": "(@)(interface)\\s+(\\w*)|((@)\\w*)",
+					"name": "meta.declaration.annotation.cvc",
+					"captures": {
+						"1": {
+							"name": "punctuation.definition.annotation.cvc"
+						},
+						"2": {
+							"name": "storage.modifier.cvc"
+						},
+						"3": {
+							"name": "storage.type.annotation.cvc"
+						},
+						"4": {
+							"name": "storage.type.annotation.cvc"
+						},
+						"5": {
+							"name": "punctuation.definition.annotation.cvc"
+						}
+					}
 				}
 			]
 		},
-		"datatype_def_cij": {
+		"anonymous-block-and-instance-initializer": {
+			"begin": "{",
+			"beginCaptures": {
+				"0": {
+					"name": "punctuation.section.block.begin.bracket.curly.cvc"
+				}
+			},
+			"end": "}",
+			"endCaptures": {
+				"0": {
+					"name": "punctuation.section.block.end.bracket.curly.cvc"
+				}
+			},
 			"patterns": [
 				{
-					"begin": "\\b([a-zA-Z]\\w*)\\s*\\(",
-					"beginCaptures": [
-						{
-							"name": "constant.other.cvc4"
-						}
-					],
-					"comment": "Constructor.",
-					"end": "\\)",
-					"endCaptures": [
-						{
-							"name": "constant.other.cvc4"
-						}
-					],
-					"patterns": [
-						{
-							"include": "#identifier_colored_colon"
-						},
-						{
-							"include": "#type"
-						},
-						{
-							"match": ",",
-							"name": "keyword.cvc4"
-						}
-					]
-				},
-				{
-					"comment": "Constant symbol.",
-					"match": "\\b[a-zA-Z]\\w*\\b",
-					"name": "constant.other.cvc4"
+					"include": "#code"
 				}
 			]
 		},
-		"equal_fail": {
-			"match": "=",
-			"name": "invalid.cvc4"
-		},
-		"expr": {
-			"comment": "A lambda or something else.",
-			"patterns": [
-				{
-					"begin": "\\bLAMBDA\\s*\\(",
-					"beginCaptures": [
-						{
-							"name": "keyword.cvc4"
-						}
-					],
-					"comment": "Actually, just the signature of a lambda.",
-					"end": "\\)\\s*:",
-					"endCaptures": [
-						{
-							"name": "keyword.cvc4"
-						}
-					],
-					"patterns": [
-						{
-							"begin": "(?<=:)",
-							"beginCaptures": [
-								{
-									"name": "constant.other.cvc4"
-								}
-							],
-							"end": ",|(?=\\))",
-							"endCaptures": [
-								{
-									"name": "constant.other.cvc4"
-								}
-							],
-							"patterns": [
-								{
-									"include": "#type"
-								}
-							]
-						},
-						{
-							"include": "#identifiers_colored_colon"
-						}
-					]
-				},
-				{
-					"include": "#expr_sub"
+		"anonymous-classes-and-new": {
+			"begin": "\\bnew\\b",
+			"beginCaptures": {
+				"0": {
+					"name": "keyword.control.new.cvc"
 				}
-			]
-		},
-		"expr_sub": {
-			"comment": "Anything but a lambda.",
+			},
+			"end": "(?=;|\\)|,|:|}|\\+)",
 			"patterns": [
 				{
-					"include": "#arith_consts"
+					"include": "#comments"
 				},
 				{
-					"comment": "Common operators.",
-					"match": "\\b(AND|OR|NOT|IF|THEN|ELSE|ELSIF|ENDIF)\\b|:=",
-					"name": "keyword.cvc4"
+					"include": "#function-call"
 				},
 				{
-					"begin": "\\bLET\\b",
-					"beginCaptures": [
-						{
-							"name": "keyword.cvc4"
-						}
-					],
-					"comment": "Let binding.",
-					"end": "\\bIN\\b",
-					"endCaptures": [
-						{
-							"name": "keyword.cvc4"
-						}
-					],
-					"patterns": [
-						{
-							"include": "#identifier_colored_equal"
-						},
-						{
-							"include": "#expr_sub"
-						}
-					]
+					"include": "#all-types"
 				},
 				{
-					"begin": "\\b(FORALL|EXISTS)\\s*\\(",
+					"begin": "(?<!\\])\\s*({)",
 					"beginCaptures": {
 						"1": {
-							"name": "keyword.cvc4"
+							"name": "punctuation.section.inner-class.begin.bracket.curly.cvc"
 						}
 					},
-					"comment": "Forall \/ exists.",
-					"end": "\\)",
+					"end": "}",
+					"endCaptures": {
+						"0": {
+							"name": "punctuation.section.inner-class.end.bracket.curly.cvc"
+						}
+					},
+					"name": "meta.inner-class.cvc",
 					"patterns": [
 						{
-							"begin": "(?<=:)",
-							"beginCaptures": [
-								{
-									"name": "constant.other.cvc4"
-								}
-							],
-							"end": ",|(?=\\))",
-							"endCaptures": [
-								{
-									"name": "constant.other.cvc4"
-								}
-							],
-							"patterns": [
-								{
-									"include": "#type"
-								}
-							]
-						},
-						{
-							"include": "#identifiers_colored_colon"
+							"include": "#class-body"
 						}
 					]
 				},
 				{
-					"begin": "\\bPATTERN\\b",
-					"beginCaptures": [
-						{
-							"name": "keyword.cvc4"
-						}
-					],
-					"comment": "Instantiation patterns.",
-					"end": ":",
-					"patterns": [
-						{
-							"include": "#expr_sub"
-						}
-					]
-				},
+					"include": "#parens"
+				}
+			]
+		},
+		"assertions": {
+			"patterns": [
 				{
-					"begin": "\\b([a-zA-Z]\\w*)\\s*\\(",
-					"beginCaptures": [
-						{
-							"name": "constant.other.cvc4"
-						}
-					],
-					"comment": "Function application.",
-					"end": "\\)",
-					"endCaptures": [
-						{
-							"name": "constant.other.cvc4"
-						}
-					],
-					"patterns": [
-						{
-							"include": "#identifier_colored_colon"
-						},
-						{
-							"include": "#expr_sub"
-						},
-						{
-							"match": ",",
-							"name": "keyword.cvc4"
-						}
-					]
-				},
-				{
-					"comment": "Update.",
-					"match": "\\bWITH\\b",
-					"name": "constant.other.cvc4"
-				},
-				{
-					"begin": "\\[",
-					"beginCaptures": [
-						{
-							"name": "constant.numeric.cvc4"
-						}
-					],
-					"comment": "Other parts of an update.",
-					"end": "\\]",
-					"endCaptures": [
-						{
-							"name": "constant.numeric.cvc4"
-						}
-					],
-					"patterns": [
-						{
-							"include": "#expr_sub"
-						}
-					]
-				},
-				{
-					"begin": "\\b([a-zA-Z]\\w*)\\s*(\\[)",
+					"begin": "\\b(assert)\\s",
 					"beginCaptures": {
-						"2": {
-							"name": "constant.numeric.cvc4"
+						"1": {
+							"name": "keyword.control.assert.cvc"
 						}
 					},
-					"comment": "Selection.",
-					"end": "\\]",
-					"endCaptures": [
-						{
-							"name": "constant.numeric.cvc4"
-						}
-					],
+					"end": "$",
+					"name": "meta.declaration.assertion.cvc",
 					"patterns": [
 						{
-							"include": "#identifier_colored_colon"
+							"match": ":",
+							"name": "keyword.operator.assert.expression-separator.cvc"
 						},
 						{
-							"include": "#expr_sub"
+							"include": "#code"
+						}
+					]
+				}
+			]
+		},
+		"class": {
+			"begin": "(?=\\w?[\\w\\s]*\\b(?:class|(?<!@)interface|enum)\\s+\\w+)",
+			"end": "}",
+			"endCaptures": {
+				"0": {
+					"name": "punctuation.section.class.end.bracket.curly.cvc"
+				}
+			},
+			"name": "meta.class.cvc",
+			"patterns": [
+				{
+					"include": "#storage-modifiers"
+				},
+				{
+					"include": "#generics"
+				},
+				{
+					"include": "#comments"
+				},
+				{
+					"captures": {
+						"1": {
+							"name": "storage.modifier.cvc"
+						},
+						"2": {
+							"name": "entity.name.type.class.cvc"
+						}
+					},
+					"match": "(class|(?<!@)interface|enum)\\s+(\\w+)",
+					"name": "meta.class.identifier.cvc"
+				},
+				{
+					"begin": "extends",
+					"beginCaptures": {
+						"0": {
+							"name": "storage.modifier.extends.cvc"
+						}
+					},
+					"end": "(?={|implements)",
+					"name": "meta.definition.class.inherited.classes.cvc",
+					"patterns": [
+						{
+							"include": "#object-types-inherited"
 						},
 						{
-							"match": ",",
-							"name": "keyword.cvc4"
+							"include": "#comments"
 						}
 					]
 				},
 				{
-					"begin": "\\(#",
-					"beginCaptures": [
-						{
-							"name": "keyword.cvc4"
+					"begin": "(implements)\\s",
+					"beginCaptures": {
+						"1": {
+							"name": "storage.modifier.implements.cvc"
 						}
-					],
-					"comment": "Record construction.",
-					"end": "#\\)",
-					"endCaptures": [
-						{
-							"name": "keyword.cvc4"
-						}
-					],
+					},
+					"end": "(?=\\s*extends|\\{)",
+					"name": "meta.definition.class.implemented.interfaces.cvc",
 					"patterns": [
 						{
-							"include": "#identifier_colored_colon"
+							"include": "#object-types-inherited"
 						},
 						{
-							"include": "#expr_sub"
+							"include": "#comments"
 						}
 					]
 				},
 				{
-					"comment": "Record selection.",
+					"begin": "{",
+					"beginCaptures": {
+						"0": {
+							"name": "punctuation.section.class.begin.bracket.curly.cvc"
+						}
+					},
+					"end": "(?=})",
+					"contentName": "meta.class.body.cvc",
+					"patterns": [
+						{
+							"include": "#class-body"
+						}
+					]
+				}
+			]
+		},
+		"class-body": {
+			"patterns": [
+				{
+					"include": "#comments-cvcdoc"
+				},
+				{
+					"include": "#comments"
+				},
+				{
+					"include": "#enums"
+				},
+				{
+					"include": "#class"
+				},
+				{
+					"include": "#generics"
+				},
+				{
+					"include": "#static-initializer"
+				},
+				{
+					"include": "#class-fields-and-methods"
+				},
+				{
+					"include": "#annotations"
+				},
+				{
+					"include": "#member-variables"
+				},
+				{
+					"include": "#storage-modifiers"
+				},
+				{
+					"include": "#code"
+				}
+			]
+		},
+		"class-fields-and-methods": {
+			"patterns": [
+				{
+					"begin": "(?=\\=)",
+					"end": "(?=;)",
+					"patterns": [
+						{
+							"include": "#code"
+						}
+					]
+				},
+				{
+					"include": "#methods"
+				}
+			]
+		},
+		"code": {
+			"patterns": [
+				{
+					"include": "#annotations"
+				},
+				{
+					"include": "#comments"
+				},
+				{
+					"include": "#enums"
+				},
+				{
+					"include": "#class"
+				},
+				{
+					"include": "#anonymous-block-and-instance-initializer"
+				},
+				{
+					"include": "#try-catch-finally"
+				},
+				{
+					"include": "#assertions"
+				},
+				{
+					"include": "#parens"
+				},
+				{
+					"include": "#constants-and-special-vars"
+				},
+				{
+					"include": "#numbers"
+				},
+				{
+					"include": "#anonymous-classes-and-new"
+				},
+				{
+					"include": "#lambda-expression"
+				},
+				{
+					"include": "#keywords"
+				},
+				{
+					"include": "#storage-modifiers"
+				},
+				{
+					"include": "#method-call"
+				},
+				{
+					"include": "#function-call"
+				},
+				{
+					"include": "#variables"
+				},
+				{
+					"include": "#variables-local"
+				},
+				{
+					"include": "#objects"
+				},
+				{
+					"include": "#properties"
+				},
+				{
+					"include": "#strings"
+				},
+				{
+					"include": "#all-types"
+				},
+				{
+					"match": ",",
+					"name": "punctuation.separator.delimiter.cvc"
+				},
+				{
 					"match": "\\.",
-					"name": "constant.numeric.cvc4"
+					"name": "punctuation.separator.period.cvc"
 				},
 				{
-					"begin": "\\(",
-					"end": "\\)",
+					"match": ";",
+					"name": "punctuation.terminator.cvc"
+				}
+			]
+		},
+		"comments": {
+			"patterns": [
+				{
+					"captures": {
+						"0": {
+							"name": "punctuation.definition.comment.cvc"
+						}
+					},
+					"match": "/\\*\\*/",
+					"name": "comment.block.empty.cvc"
+				},
+				{
+					"include": "#comments-inline"
+				}
+			]
+		},
+		"comments-inline": {
+			"patterns": [
+				{
+					"begin": "/\\*",
+					"captures": {
+						"0": {
+							"name": "punctuation.definition.comment.cvc"
+						}
+					},
+					"end": "\\*/",
+					"name": "comment.block.cvc"
+				},
+				{
+					"begin": "(^[ \\t]+)?(?=//)",
+					"beginCaptures": {
+						"1": {
+							"name": "punctuation.whitespace.comment.leading.cvc"
+						}
+					},
+					"end": "(?!\\G)",
 					"patterns": [
 						{
-							"include": "#expr_sub"
+							"begin": "//",
+							"beginCaptures": {
+								"0": {
+									"name": "punctuation.definition.comment.cvc"
+								}
+							},
+							"end": "\\n",
+							"name": "comment.line.double-slash.cvc"
 						}
 					]
-				},
-				{
-					"include": "#identifier"
-				},
-				{
-					"match": ","
 				}
 			]
 		},
-		"identifier": {
-			"match": "\\b[a-zA-Z]\\w*\\b"
-		},
-		"identifier_colored": {
-			"match": "\\b[a-zA-Z]\\w*\\b",
-			"name": "constant.numeric.cvc4"
-		},
-		"identifier_colored_colon": {
-			"captures": {
-				"1": {
-					"name": "constant.numeric.cvc4"
+		"comments-cvcdoc": {
+			"patterns": [
+				{
+					"begin": "^\\s*(/\\*\\*)(?!/)",
+					"beginCaptures": {
+						"1": {
+							"name": "punctuation.definition.comment.cvc"
+						}
+					},
+					"end": "\\*/",
+					"endCaptures": {
+						"0": {
+							"name": "punctuation.definition.comment.cvc"
+						}
+					},
+					"name": "comment.block.cvcdoc.cvc",
+					"patterns": [
+						{
+							"match": "@(author|deprecated|return|see|serial|since|version)\\b",
+							"name": "keyword.other.documentation.cvcdoc.cvc"
+						},
+						{
+							"match": "(@param)\\s+(\\S+)",
+							"captures": {
+								"1": {
+									"name": "keyword.other.documentation.cvcdoc.cvc"
+								},
+								"2": {
+									"name": "variable.parameter.cvc"
+								}
+							}
+						},
+						{
+							"match": "(@(?:exception|throws))\\s+(\\S+)",
+							"captures": {
+								"1": {
+									"name": "keyword.other.documentation.cvcdoc.cvc"
+								},
+								"2": {
+									"name": "entity.name.type.class.cvc"
+								}
+							}
+						},
+						{
+							"match": "{(@link)\\s+(\\S+)?#([\\w$]+\\s*\\([^\\(\\)]*\\)).*}",
+							"captures": {
+								"1": {
+									"name": "keyword.other.documentation.cvcdoc.cvc"
+								},
+								"2": {
+									"name": "entity.name.type.class.cvc"
+								},
+								"3": {
+									"name": "variable.parameter.cvc"
+								}
+							}
+						}
+					]
 				}
-			},
-			"match": "\\b([a-zA-Z]\\w*)\\s*:"
+			]
 		},
-		"identifier_colored_equal": {
-			"captures": {
-				"1": {
-					"name": "constant.numeric.cvc4"
+		"constants-and-special-vars": {
+			"patterns": [
+				{
+					"match": "\\b(true|false|null)\\b",
+					"name": "constant.language.cvc"
+				},
+				{
+					"match": "\\bthis\\b",
+					"name": "variable.language.this.cvc"
+				},
+				{
+					"match": "\\bsuper\\b",
+					"name": "variable.language.cvc"
 				}
-			},
-			"match": "\\b([a-zA-Z]\\w*)\\s*="
+			]
 		},
-		"identifiers_colored_colon": {
-			"begin": "\\b([a-zA-Z]\\w*)\\b",
+		"enums": {
+			"begin": "^\\s*([\\w\\s]*)(enum)\\s+(\\w+)",
 			"beginCaptures": {
 				"1": {
-					"name": "constant.numeric.cvc4"
-				}
-			},
-			"comment": "Starts a symbol definition \/ declaration or a lambda signature.",
-			"end": ":",
-			"patterns": [
-				{
-					"include": "#identifier_colored"
-				}
-			]
-		},
-		"integer": {
-			"match": "\\b(0|[1-9][0-9]*)\\b",
-			"name": "constant.other.cvc4"
-		},
-		"semicolon_fail": {
-			"match": ";",
-			"name": "invalid.cvc4"
-		},
-		"symbol_def_expr_end": {
-			"begin": "(?<==)",
-			"end": "(?=;)",
-			"patterns": [
-				{
-					"include": "#expr"
-				}
-			]
-		},
-		"symbol_def_or_decl": {
-			"begin": "\\b(([a-zA-Z]\\w*)(\\s*,\\s*[a-zA-Z]\\w*)*)\\s*:",
-			"beginCaptures": {
-				"1": {
-					"name": "constant.numeric.cvc4"
-				}
-			},
-			"end": ";",
-			"patterns": [
-				{
-					"include": "#symbol_def_or_decl_type"
-				},
-				{
-					"include": "#symbol_def_expr_end"
-				},
-				{
-					"include": "#identifier_colored"
-				}
-			]
-		},
-		"symbol_def_or_decl_type": {
-			"begin": "(?<=:)",
-			"end": "(=|(?=;)){1,1}?",
-			"patterns": [
-				{
-					"include": "#type"
-				}
-			]
-		},
-		"type": {
-			"comment": "Color user types only at top level.",
-			"patterns": [
-				{
-					"include": "#type_sub"
-				},
-				{
-					"include": "#user_type_colored"
-				}
-			]
-		},
-		"type_decl": {
-			"captures": {
-				"1": {
-					"name": "support.type.cvc4"
-				},
-				"3": {
-					"name": "keyword.cvc4"
-				},
-				"4": {
-					"name": "support.type.cvc4"
-				},
-				"5": {
-					"name": "keyword.cvc4"
-				}
-			},
-			"comment": "User-defined basic types.",
-			"match": "([a-zA-Z]\\w*)(\\s*(,)\\s*([a-zA-Z]\\w*))*\\s*:\\s*(TYPE)\\s*;"
-		},
-		"type_def": {
-			"begin": "([a-zA-Z]\\w*)\\s*:\\s*(TYPE)\\s*=",
-			"beginCaptures": {
-				"1": {
-					"name": "support.type.cvc4"
+					"patterns": [
+						{
+							"include": "#storage-modifiers"
+						}
+					]
 				},
 				"2": {
-					"name": "keyword.cvc4"
+					"name": "storage.modifier.cvc"
+				},
+				"3": {
+					"name": "entity.name.type.enum.cvc"
 				}
 			},
-			"comment": "Type definitions.",
-			"end": ";",
+			"end": "}",
+			"endCaptures": {
+				"0": {
+					"name": "punctuation.section.enum.end.bracket.curly.cvc"
+				}
+			},
+			"name": "meta.enum.cvc",
 			"patterns": [
 				{
-					"include": "#type"
+					"begin": "\\b(extends)\\b",
+					"beginCaptures": {
+						"1": {
+							"name": "storage.modifier.extends.cvc"
+						}
+					},
+					"end": "(?={|\\bimplements\\b)",
+					"name": "meta.definition.class.inherited.classes.cvc",
+					"patterns": [
+						{
+							"include": "#object-types-inherited"
+						},
+						{
+							"include": "#comments"
+						}
+					]
 				},
 				{
-					"include": "#equal_fail"
+					"begin": "\\b(implements)\\b",
+					"beginCaptures": {
+						"1": {
+							"name": "storage.modifier.implements.cvc"
+						}
+					},
+					"end": "(?={|\\bextends\\b)",
+					"name": "meta.definition.class.implemented.interfaces.cvc",
+					"patterns": [
+						{
+							"include": "#object-types-inherited"
+						},
+						{
+							"include": "#comments"
+						}
+					]
 				},
 				{
-					"include": "#semicolon_fail"
+					"begin": "{",
+					"beginCaptures": {
+						"0": {
+							"name": "punctuation.section.enum.begin.bracket.curly.cvc"
+						}
+					},
+					"end": "(?=})",
+					"patterns": [
+						{
+							"begin": "(?<={)",
+							"end": "(?=;|})",
+							"patterns": [
+								{
+									"include": "#comments-cvcdoc"
+								},
+								{
+									"include": "#comments"
+								},
+								{
+									"begin": "(\\w+)\\s*({)",
+									"beginCaptures": {
+										"1": {
+											"name": "constant.other.enum.cvc"
+										},
+										"2": {
+											"name": "punctuation.bracket.curly.cvc"
+										}
+									},
+									"end": "\\}",
+									"endCaptures": {
+										"0": {
+											"name": "punctuation.bracket.curly.cvc"
+										}
+									},
+									"patterns": [
+										{
+											"include": "#class-body"
+										}
+									]
+								},
+								{
+									"begin": "(\\w+)\\s*(\\()",
+									"beginCaptures": {
+										"1": {
+											"name": "constant.other.enum.cvc"
+										},
+										"2": {
+											"name": "punctuation.bracket.round.cvc"
+										}
+									},
+									"end": "\\)",
+									"endCaptures": {
+										"0": {
+											"name": "punctuation.bracket.round.cvc"
+										}
+									},
+									"patterns": [
+										{
+											"include": "#code"
+										}
+									]
+								},
+								{
+									"match": "\\b\\w+\\b",
+									"name": "constant.other.enum.cvc"
+								}
+							]
+						},
+						{
+							"include": "#class-body"
+						}
+					]
 				}
 			]
 		},
-		"type_sub": {
-			"comment": "Actual types. User types appearing in parametric types are not colored.",
+		"function-call": {
+			"begin": "([A-Za-z_$][\\w$]*)\\s*(\\()",
+			"beginCaptures": {
+				"1": {
+					"name": "entity.name.function.cvc"
+				},
+				"2": {
+					"name": "punctuation.definition.parameters.begin.bracket.round.cvc"
+				}
+			},
+			"end": "\\)",
+			"endCaptures": {
+				"0": {
+					"name": "punctuation.definition.parameters.end.bracket.round.cvc"
+				}
+			},
+			"name": "meta.function-call.cvc",
 			"patterns": [
 				{
-					"comment": "Primitive types.",
-					"match": "\\b(BOOLEAN|REAL|INT)\\b",
-					"name": "support.type.cvc4"
+					"include": "#code"
+				}
+			]
+		},
+		"generics": {
+			"begin": "<",
+			"beginCaptures": {
+				"0": {
+					"name": "punctuation.bracket.angle.cvc"
+				}
+			},
+			"end": ">",
+			"endCaptures": {
+				"0": {
+					"name": "punctuation.bracket.angle.cvc"
+				}
+			},
+			"patterns": [
+				{
+					"match": "\\b(extends|super)\\b",
+					"name": "storage.modifier.$1.cvc"
 				},
 				{
-					"begin": "\\bBITVECTOR\\s*\\(",
-					"comment": "Bitvectors.",
-					"end": "\\)",
-					"name": "support.type.cvc4",
-					"patterns": [
-						{
-							"include": "#integer"
-						},
-						{
-							"comment": "Anything else is invalid.",
-							"match": "[^\\s\\)]+",
-							"name": "invalid.cvc4"
+					"match": "(?<!\\.)([a-zA-Z$_][a-zA-Z0-9$_]*)(?=\\s*<)",
+					"captures": {
+						"1": {
+							"name": "storage.type.cvc"
 						}
-					]
+					}
 				},
 				{
-					"begin": "\\bARRAY\\b",
-					"beginCaptures": [
-						{
-							"name": "keyword.cvc4"
-						}
-					],
-					"comment": "Arrays.",
-					"end": "\\bOF\\b",
-					"endCaptures": [
-						{
-							"name": "keyword.cvc4"
-						}
-					],
-					"patterns": [
-						{
-							"include": "#type_sub"
-						}
-					]
+					"include": "#primitive-arrays"
 				},
 				{
-					"begin": "\\b([a-zA-Z]\\w*)\\s*(\\[)",
+					"match": "[a-zA-Z$_][a-zA-Z0-9$_]*",
+					"name": "storage.type.generic.cvc"
+				},
+				{
+					"match": "\\?",
+					"name": "storage.type.generic.wildcard.cvc"
+				},
+				{
+					"match": "&",
+					"name": "punctuation.separator.types.cvc"
+				},
+				{
+					"match": ",",
+					"name": "punctuation.separator.delimiter.cvc"
+				},
+				{
+					"match": "\\.",
+					"name": "punctuation.separator.period.cvc"
+				},
+				{
+					"include": "#parens"
+				},
+				{
+					"include": "#generics"
+				},
+				{
+					"include": "#comments"
+				}
+			]
+		},
+		"keywords": {
+			"patterns": [
+				{
+					"match": "\\bthrow\\b",
+					"name": "keyword.control.throw.cvc"
+				},
+				{
+					"match": "\\?|:",
+					"name": "keyword.control.ternary.cvc"
+				},
+				{
+					"match": "\\b(ASSERT|QUERY|CHECKSAT|OPTION|PUSH|POP|POPTO|PUSH_SCOPE|POP_SCOPE|POPTO_SCOPE|RESET|DATATYPE|END|CONTEXT|FORGET|GET_TYPE|CHECK_TYPE|GET_CHILD|GET_OP|GET_VALUE|SUBSTITUTE|DBG|TRACE|UNTRACE|HELP|TRANSFORM|PRINT|PRINT_TYPE|CALL|ECHO|EXIT|INCLUDE|DUMP_PROOF|DUMP_UNSAT_CORE|DUMP_ASSUMPTIONS|DUMP_SIG|DUMP_TCC|DUMP_TCC_ASSUMPTIONS|DUMP_TCC_PROOF|DUMP_CLOSURE|DUMP_CLOSURE_PROOF|WHERE|ASSERTIONS|ASSUMPTIONS|COUNTEREXAMPLE|COUNTERMODEL|ARITH_VAR_ORDER|CONTINUE|RESTART|REC-FUN|AND|BOOLEAN|ELSIF|ELSE|ENDIF|FALSE|IF|IN|INT|LET|IS_IN|NOT|OR|REAL|THEN|TRUE|TYPE|XOR|ARRAY|OF|WITH|SUBTYPE|SET|TUPLE|FORALL|EXISTS|PATTERN|LAMBDA|MOD|DIV|FLOOR|ABS|DIVISIBLE|DISTINCT|BITVECTOR|BVPLUS|BVSUB|BVUDIV|BVSDIV|BVUREM|BVSREM|BVSMOD|BVSHL|BVASHR|BVLSHR|BVUMINUS|BVMULT|BVXOR|BVNAND|BVNOR|BVCOMP|BVXNOR|BVTOINT|INTTOBV|BOOLEXTRACT|IS_INTEGER|BVLT|BVGT|BVLE|BVGE|SX|BVZEROEXTEND|BVREPEAT|BVROTL|BVROTR|BVSLT|BVSGT|BVSLE|BVSGE|JOIN|TRANSPOSE|PRODUCT|TCLOSURE|IDEN|JOIN_IMAGE|STRING|CONCAT|LENGTH|CONTAINS|SUBSTR|CHARAT|INDEXOF|REPLACE|PREFIXOF|SUFFIXOF|STRING_TO_INTEGER|INTEGER_TO_STRING|CARD|HAS_CARD|UNIVERSE)\\b",
+					"name": "keyword.other.cvc"
+				},
+				{
+					"match": "\\b(instanceof)\\b",
+					"name": "keyword.operator.instanceof.cvc"
+				},
+				{
+					"match": "(<<|>>>?|~|\\^)",
+					"name": "keyword.operator.bitwise.cvc"
+				},
+				{
+					"match": "((&|\\^|\\||<<|>>>?)=)",
+					"name": "keyword.operator.assignment.bitwise.cvc"
+				},
+				{
+					"match": "(===?|!=|<=|>=|<>|<|>)",
+					"name": "keyword.operator.comparison.cvc"
+				},
+				{
+					"match": "([+*/%-]=)",
+					"name": "keyword.operator.assignment.arithmetic.cvc"
+				},
+				{
+					"match": "(=)",
+					"name": "keyword.operator.assignment.cvc"
+				},
+				{
+					"match": "(\\-\\-|\\+\\+)",
+					"name": "keyword.operator.increment-decrement.cvc"
+				},
+				{
+					"match": "(\\-|\\+|\\*|\\/|%)",
+					"name": "keyword.operator.arithmetic.cvc"
+				},
+				{
+					"match": "(!|&&|\\|\\|)",
+					"name": "keyword.operator.logical.cvc"
+				},
+				{
+					"match": "(\\||&)",
+					"name": "keyword.operator.bitwise.cvc"
+				},
+				{
+					"match": "\\b(const|goto)\\b",
+					"name": "keyword.reserved.cvc"
+				}
+			]
+		},
+		"lambda-expression": {
+			"patterns": [
+				{
+					"match": "->",
+					"name": "storage.type.function.arrow.cvc"
+				}
+			]
+		},
+		"member-variables": {
+			"begin": "(?=private|protected|public|native|synchronized|abstract|threadsafe|transient|static|final)",
+			"end": "(?=\\=|;)",
+			"patterns": [
+				{
+					"include": "#storage-modifiers"
+				},
+				{
+					"include": "#variables"
+				},
+				{
+					"include": "#primitive-arrays"
+				},
+				{
+					"include": "#object-types"
+				}
+			]
+		},
+		"method-call": {
+			"begin": "(\\.)\\s*([A-Za-z_$][\\w$]*)\\s*(\\()",
+			"beginCaptures": {
+				"1": {
+					"name": "punctuation.separator.period.cvc"
+				},
+				"2": {
+					"name": "entity.name.function.cvc"
+				},
+				"3": {
+					"name": "punctuation.definition.parameters.begin.bracket.round.cvc"
+				}
+			},
+			"end": "\\)",
+			"endCaptures": {
+				"0": {
+					"name": "punctuation.definition.parameters.end.bracket.round.cvc"
+				}
+			},
+			"name": "meta.method-call.cvc",
+			"patterns": [
+				{
+					"include": "#code"
+				}
+			]
+		},
+		"methods": {
+			"begin": "(?!new)(?=[\\w<].*\\s+)(?=([^=/]|/(?!/))+\\()",
+			"end": "(})|(?=;)",
+			"endCaptures": {
+				"1": {
+					"name": "punctuation.section.method.end.bracket.curly.cvc"
+				}
+			},
+			"name": "meta.method.cvc",
+			"patterns": [
+				{
+					"include": "#storage-modifiers"
+				},
+				{
+					"begin": "(\\w+)\\s*(\\()",
 					"beginCaptures": {
 						"1": {
-							"name": "support.type"
+							"name": "entity.name.function.cvc"
 						},
 						"2": {
-							"name": "keyword.cvc4"
+							"name": "punctuation.definition.parameters.begin.bracket.round.cvc"
 						}
 					},
-					"comment": "Parametric types.",
-					"end": "(\\])",
+					"end": "\\)",
 					"endCaptures": {
-						"1": {
-							"name": "keyword.cvc4"
+						"0": {
+							"name": "punctuation.definition.parameters.end.bracket.round.cvc"
 						}
 					},
+					"name": "meta.method.identifier.cvc",
 					"patterns": [
 						{
-							"include": "#type_sub"
+							"include": "#parameters"
+						},
+						{
+							"include": "#parens"
+						},
+						{
+							"include": "#comments"
 						}
 					]
 				},
 				{
-					"begin": "\\[#",
-					"beginCaptures": [
-						{
-							"name": "keyword.cvc4"
-						}
-					],
-					"comment": "Records.",
-					"end": "#\\]",
-					"endCaptures": [
-						{
-							"name": "keyword.cvc4"
-						}
-					],
+					"include": "#generics"
+				},
+				{
+					"begin": "(?=\\w.*\\s+\\w+\\s*\\()",
+					"end": "(?=\\s+\\w+\\s*\\()",
+					"name": "meta.method.return-type.cvc",
 					"patterns": [
 						{
-							"match": ",",
-							"name": "keyword.cvc4"
+							"include": "#all-types"
 						},
 						{
-							"include": "#identifier_colored_colon"
+							"include": "#parens"
 						},
 						{
-							"include": "#type_sub"
+							"include": "#comments"
+						}
+					]
+				},
+				{
+					"include": "#throws"
+				},
+				{
+					"begin": "{",
+					"beginCaptures": {
+						"0": {
+							"name": "punctuation.section.method.begin.bracket.curly.cvc"
+						}
+					},
+					"end": "(?=})",
+					"contentName": "meta.method.body.cvc",
+					"patterns": [
+						{
+							"include": "#code"
+						}
+					]
+				},
+				{
+					"include": "#comments"
+				}
+			]
+		},
+		"module": {
+			"begin": "((open)\\s)?(module)\\s+(\\w+)",
+			"end": "}",
+			"beginCaptures": {
+				"1": {
+					"name": "storage.modifier.cvc"
+				},
+				"3": {
+					"name": "storage.modifier.cvc"
+				},
+				"4": {
+					"name": "entity.name.type.module.cvc"
+				}
+			},
+			"endCaptures": {
+				"0": {
+					"name": "punctuation.section.module.end.bracket.curly.cvc"
+				}
+			},
+			"name": "meta.module.cvc",
+			"patterns": [
+				{
+					"begin": "{",
+					"beginCaptures": {
+						"0": {
+							"name": "punctuation.section.module.begin.bracket.curly.cvc"
+						}
+					},
+					"end": "(?=})",
+					"contentName": "meta.module.body.cvc",
+					"patterns": [
+						{
+							"match": "\\b(requires|transitive|exports|opens|to|uses|provides|with)\\b",
+							"name": "keyword.module.cvc"
+						}
+					]
+				}
+			]
+		},
+		"numbers": {
+			"patterns": [
+				{
+					"match": "(?x)\n\\b(?<!\\$)\n0(x|X)\n(\n  (?<!\\.)[0-9a-fA-F]([0-9a-fA-F_]*[0-9a-fA-F])?[Ll]?(?!\\.)\n  |\n  (\n    [0-9a-fA-F]([0-9a-fA-F_]*[0-9a-fA-F])?\\.?\n    |\n    ([0-9a-fA-F]([0-9a-fA-F_]*[0-9a-fA-F])?)?\\.[0-9a-fA-F]([0-9a-fA-F_]*[0-9a-fA-F])?\n  )\n  [Pp][+-]?[0-9]([0-9_]*[0-9])?[FfDd]?\n)\n\\b(?!\\$)",
+					"name": "constant.numeric.hex.cvc"
+				},
+				{
+					"match": "\\b(?<!\\$)0(b|B)[01]([01_]*[01])?[Ll]?\\b(?!\\$)",
+					"name": "constant.numeric.binary.cvc"
+				},
+				{
+					"match": "\\b(?<!\\$)0[0-7]([0-7_]*[0-7])?[Ll]?\\b(?!\\$)",
+					"name": "constant.numeric.octal.cvc"
+				},
+				{
+					"match": "(?x)\n(?<!\\$)\n(\n  \\b[0-9]([0-9_]*[0-9])?\\.\\B(?!\\.)\n  |\n  \\b[0-9]([0-9_]*[0-9])?\\.([Ee][+-]?[0-9]([0-9_]*[0-9])?)[FfDd]?\\b\n  |\n  \\b[0-9]([0-9_]*[0-9])?\\.([Ee][+-]?[0-9]([0-9_]*[0-9])?)?[FfDd]\\b\n  |\n  \\b[0-9]([0-9_]*[0-9])?\\.([0-9]([0-9_]*[0-9])?)([Ee][+-]?[0-9]([0-9_]*[0-9])?)?[FfDd]?\\b\n  |\n  (?<!\\.)\\B\\.[0-9]([0-9_]*[0-9])?([Ee][+-]?[0-9]([0-9_]*[0-9])?)?[FfDd]?\\b\n  |\n  \\b[0-9]([0-9_]*[0-9])?([Ee][+-]?[0-9]([0-9_]*[0-9])?)[FfDd]?\\b\n  |\n  \\b[0-9]([0-9_]*[0-9])?([Ee][+-]?[0-9]([0-9_]*[0-9])?)?[FfDd]\\b\n  |\n  \\b(0|[1-9]([0-9_]*[0-9])?)(?!\\.)[Ll]?\\b\n)\n(?!\\$)",
+					"name": "constant.numeric.decimal.cvc"
+				}
+			]
+		},
+		"object-types": {
+			"patterns": [
+				{
+					"include": "#generics"
+				},
+				{
+					"begin": "\\b((?:[A-Za-z]\\w*\\s*\\.\\s*)*)([A-Z]\\w*)\\s*(?=\\[)",
+					"beginCaptures": {
+						"1": {
+							"patterns": [
+								{
+									"match": "[A-Za-z]\\w*",
+									"name": "storage.type.cvc"
+								},
+								{
+									"match": "\\.",
+									"name": "punctuation.separator.period.cvc"
+								}
+							]
+						},
+						"2": {
+							"name": "storage.type.object.array.cvc"
+						}
+					},
+					"end": "(?!\\s*\\[)",
+					"patterns": [
+						{
+							"include": "#comments"
 						},
 						{
-							"include": "#user_type"
+							"include": "#parens"
+						}
+					]
+				},
+				{
+					"match": "\\b((?:[A-Za-z]\\w*\\s*\\.\\s*)*[A-Z]\\w*)\\s*(?=<)",
+					"captures": {
+						"1": {
+							"patterns": [
+								{
+									"match": "[A-Za-z]\\w*",
+									"name": "storage.type.cvc"
+								},
+								{
+									"match": "\\.",
+									"name": "punctuation.separator.period.cvc"
+								}
+							]
+						}
+					}
+				},
+				{
+					"match": "\\b((?:[A-Za-z]\\w*\\s*\\.\\s*)*[A-Z]\\w*)\\b((?=\\s*[A-Za-z$_\\n])|(?=\\s*\\.\\.\\.))",
+					"captures": {
+						"1": {
+							"patterns": [
+								{
+									"match": "[A-Za-z]\\w*",
+									"name": "storage.type.cvc"
+								},
+								{
+									"match": "\\.",
+									"name": "punctuation.separator.period.cvc"
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		"object-types-inherited": {
+			"patterns": [
+				{
+					"include": "#generics"
+				},
+				{
+					"match": "\\b(?:[A-Z]\\w*\\s*(\\.)\\s*)*[A-Z]\\w*\\b",
+					"name": "entity.other.inherited-class.cvc",
+					"captures": {
+						"1": {
+							"name": "punctuation.separator.period.cvc"
+						}
+					}
+				},
+				{
+					"match": ",",
+					"name": "punctuation.separator.delimiter.cvc"
+				}
+			]
+		},
+		"objects": {
+			"match": "(?<![\\w$])[a-zA-Z_$][\\w$]*(?=\\s*\\.\\s*[\\w$]+)",
+			"name": "variable.other.object.cvc"
+		},
+		"parameters": {
+			"patterns": [
+				{
+					"match": "\\bfinal\\b",
+					"name": "storage.modifier.cvc"
+				},
+				{
+					"include": "#annotations"
+				},
+				{
+					"include": "#all-types"
+				},
+				{
+					"include": "#strings"
+				},
+				{
+					"match": "\\w+",
+					"name": "variable.parameter.cvc"
+				},
+				{
+					"match": ",",
+					"name": "punctuation.separator.delimiter.cvc"
+				},
+				{
+					"match": "\\.\\.\\.",
+					"name": "punctuation.definition.parameters.varargs.cvc"
+				}
+			]
+		},
+		"parens": {
+			"patterns": [
+				{
+					"begin": "\\(",
+					"beginCaptures": {
+						"0": {
+							"name": "punctuation.bracket.round.cvc"
+						}
+					},
+					"end": "\\)",
+					"endCaptures": {
+						"0": {
+							"name": "punctuation.bracket.round.cvc"
+						}
+					},
+					"patterns": [
+						{
+							"include": "#code"
 						}
 					]
 				},
 				{
 					"begin": "\\[",
-					"beginCaptures": [
-						{
-							"name": "keyword.cvc4"
+					"beginCaptures": {
+						"0": {
+							"name": "punctuation.bracket.square.cvc"
 						}
-					],
-					"comment": "Tuples.",
+					},
 					"end": "\\]",
-					"endCaptures": [
-						{
-							"name": "keyword.cvc4"
+					"endCaptures": {
+						"0": {
+							"name": "punctuation.bracket.square.cvc"
 						}
-					],
+					},
 					"patterns": [
 						{
-							"match": ",",
-							"name": "keyword.cvc4"
-						},
-						{
-							"include": "#type_sub"
-						},
-						{
-							"include": "#user_type"
+							"include": "#code"
 						}
 					]
 				},
 				{
-					"comment": "_ -> _ functions, coloring only arrow. No begin, no end. Can't do better without tedious repetitions.",
-					"match": "\\->",
-					"name": "keyword.cvc4"
-				},
-				{
-					"begin": "\\(",
-					"beginCaptures": [
-						{
-							"name": "keyword.cvc4"
+					"begin": "{",
+					"beginCaptures": {
+						"0": {
+							"name": "punctuation.bracket.curly.cvc"
 						}
-					],
-					"comment": "(_, _ [, _]*) -> _ functions, lhs part. Also accepts (SomeType).",
-					"end": "\\)",
-					"endCaptures": [
-						{
-							"name": "keyword.cvc4"
+					},
+					"end": "}",
+					"endCaptures": {
+						"0": {
+							"name": "punctuation.bracket.curly.cvc"
 						}
-					],
+					},
 					"patterns": [
 						{
-							"include": "#type_sub"
-						},
-						{
-							"include": "#user_type"
-						},
-						{
-							"match": ",",
-							"name": "keyword.cvc4"
+							"include": "#code"
 						}
 					]
 				}
 			]
 		},
-		"user_type": {
-			"match": "\\b[a-zA-Z]\\w*\\b"
+		"primitive-arrays": {
+			"patterns": [
+				{
+					"begin": "\\b(void|boolean|byte|char|short|int|float|long|double)\\b\\s*(?=\\[)",
+					"beginCaptures": {
+						"1": {
+							"name": "storage.type.primitive.array.cvc"
+						}
+					},
+					"end": "(?!\\s*\\[)",
+					"patterns": [
+						{
+							"include": "#comments"
+						},
+						{
+							"include": "#parens"
+						}
+					]
+				}
+			]
 		},
-		"user_type_colored": {
-			"match": "\\b[a-zA-Z]\\w*\\b",
-			"name": "support.type.cvc4"
+		"primitive-types": {
+			"match": "\\b(void|boolean|byte|char|short|int|float|long|double)\\b",
+			"name": "storage.type.primitive.cvc"
+		},
+		"properties": {
+			"patterns": [
+				{
+					"match": "(\\.)\\s*([a-zA-Z_$][\\w$]*)(?=\\s*\\.\\s*[a-zA-Z_$][\\w$]*)",
+					"captures": {
+						"1": {
+							"name": "punctuation.separator.period.cvc"
+						},
+						"2": {
+							"name": "variable.other.object.property.cvc"
+						}
+					}
+				},
+				{
+					"match": "(\\.)\\s*([a-zA-Z_$][\\w$]*)",
+					"captures": {
+						"1": {
+							"name": "punctuation.separator.period.cvc"
+						},
+						"2": {
+							"name": "variable.other.property.cvc"
+						}
+					}
+				},
+				{
+					"match": "(\\.)\\s*([0-9][\\w$]*)",
+					"captures": {
+						"1": {
+							"name": "punctuation.separator.period.cvc"
+						},
+						"2": {
+							"name": "invalid.illegal.identifier.cvc"
+						}
+					}
+				}
+			]
+		},
+		"static-initializer": {
+			"patterns": [
+				{
+					"include": "#anonymous-block-and-instance-initializer"
+				},
+				{
+					"match": "static",
+					"name": "storage.modifier.cvc"
+				}
+			]
+		},
+		"storage-modifiers": {
+			"match": "\\b(public|private|protected|static|final|native|synchronized|abstract|threadsafe|transient|volatile|default|strictfp)\\b",
+			"name": "storage.modifier.cvc"
+		},
+		"strings": {
+			"patterns": [
+				{
+					"begin": "\"",
+					"beginCaptures": {
+						"0": {
+							"name": "punctuation.definition.string.begin.cvc"
+						}
+					},
+					"end": "\"",
+					"endCaptures": {
+						"0": {
+							"name": "punctuation.definition.string.end.cvc"
+						}
+					},
+					"name": "string.quoted.double.cvc",
+					"patterns": [
+						{
+							"match": "\\\\.",
+							"name": "constant.character.escape.cvc"
+						}
+					]
+				},
+				{
+					"begin": "'",
+					"beginCaptures": {
+						"0": {
+							"name": "punctuation.definition.string.begin.cvc"
+						}
+					},
+					"end": "'",
+					"endCaptures": {
+						"0": {
+							"name": "punctuation.definition.string.end.cvc"
+						}
+					},
+					"name": "string.quoted.single.cvc",
+					"patterns": [
+						{
+							"match": "\\\\.",
+							"name": "constant.character.escape.cvc"
+						}
+					]
+				}
+			]
+		},
+		"throws": {
+			"begin": "throws",
+			"beginCaptures": {
+				"0": {
+					"name": "storage.modifier.cvc"
+				}
+			},
+			"end": "(?={|;)",
+			"name": "meta.throwables.cvc",
+			"patterns": [
+				{
+					"match": ",",
+					"name": "punctuation.separator.delimiter.cvc"
+				},
+				{
+					"match": "[a-zA-Z$_][\\.a-zA-Z0-9$_]*",
+					"name": "storage.type.cvc"
+				}
+			]
+		},
+		"try-catch-finally": {
+			"patterns": [
+				{
+					"begin": "\\btry\\b",
+					"beginCaptures": {
+						"0": {
+							"name": "keyword.control.try.cvc"
+						}
+					},
+					"end": "}",
+					"endCaptures": {
+						"0": {
+							"name": "punctuation.section.try.end.bracket.curly.cvc"
+						}
+					},
+					"name": "meta.try.cvc",
+					"patterns": [
+						{
+							"begin": "\\(",
+							"beginCaptures": {
+								"0": {
+									"name": "punctuation.section.try.resources.begin.bracket.round.cvc"
+								}
+							},
+							"end": "\\)",
+							"endCaptures": {
+								"0": {
+									"name": "punctuation.section.try.resources.end.bracket.round.cvc"
+								}
+							},
+							"name": "meta.try.resources.cvc",
+							"patterns": [
+								{
+									"include": "#code"
+								}
+							]
+						},
+						{
+							"begin": "{",
+							"beginCaptures": {
+								"0": {
+									"name": "punctuation.section.try.begin.bracket.curly.cvc"
+								}
+							},
+							"end": "(?=})",
+							"contentName": "meta.try.body.cvc",
+							"patterns": [
+								{
+									"include": "#code"
+								}
+							]
+						}
+					]
+				},
+				{
+					"begin": "\\b(catch)\\b\\s*(?=\\(\\s*[^\\s]+\\s*[^)]+\\))",
+					"beginCaptures": {
+						"1": {
+							"name": "keyword.control.catch.cvc"
+						}
+					},
+					"end": "}",
+					"endCaptures": {
+						"0": {
+							"name": "punctuation.section.catch.end.bracket.curly.cvc"
+						}
+					},
+					"name": "meta.catch.cvc",
+					"patterns": [
+						{
+							"begin": "\\(",
+							"beginCaptures": {
+								"0": {
+									"name": "punctuation.definition.parameters.begin.bracket.round.cvc"
+								}
+							},
+							"end": "\\)",
+							"endCaptures": {
+								"0": {
+									"name": "punctuation.definition.parameters.end.bracket.round.cvc"
+								}
+							},
+							"contentName": "meta.catch.parameters.cvc",
+							"patterns": [
+								{
+									"include": "#comments"
+								},
+								{
+									"include": "#storage-modifiers"
+								},
+								{
+									"match": "\\|",
+									"name": "punctuation.catch.separator.cvc"
+								},
+								{
+									"match": "([a-zA-Z$_][\\.a-zA-Z0-9$_]*)\\s*(\\w+)?",
+									"captures": {
+										"1": {
+											"name": "storage.type.cvc"
+										},
+										"2": {
+											"name": "variable.parameter.cvc"
+										}
+									}
+								}
+							]
+						},
+						{
+							"begin": "{",
+							"beginCaptures": {
+								"0": {
+									"name": "punctuation.section.catch.begin.bracket.curly.cvc"
+								}
+							},
+							"end": "(?=})",
+							"contentName": "meta.catch.body.cvc",
+							"patterns": [
+								{
+									"include": "#code"
+								}
+							]
+						}
+					]
+				},
+				{
+					"begin": "\\bfinally\\b",
+					"beginCaptures": {
+						"0": {
+							"name": "keyword.control.finally.cvc"
+						}
+					},
+					"end": "}",
+					"endCaptures": {
+						"0": {
+							"name": "punctuation.section.finally.end.bracket.curly.cvc"
+						}
+					},
+					"name": "meta.finally.cvc",
+					"patterns": [
+						{
+							"begin": "{",
+							"beginCaptures": {
+								"0": {
+									"name": "punctuation.section.finally.begin.bracket.curly.cvc"
+								}
+							},
+							"end": "(?=})",
+							"contentName": "meta.finally.body.cvc",
+							"patterns": [
+								{
+									"include": "#code"
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		"variables": {
+			"begin": "(?x)\n(?=\n  (\n    \\b(void|boolean|byte|char|short|int|float|long|double)\\b\n    |\n    (?>(\\w+\\.)*[A-Z]+\\w*) # e.g. `cvcx.ws.rs.Response`, or `String`\n  )\n  (\n    <[\\w<>,\\.?\\s\\[\\]]*> # e.g. `HashMap<Integer, String>`, or `List<cvc.lang.String>`\n  )?\n  (\n    (\\[\\])* # int[][]\n  )?\n  \\s+\n  [A-Za-z_$][\\w$]* # At least one identifier after space\n  ([\\w\\[\\],$][\\w\\[\\],\\s]*)? # possibly primitive array or additional identifiers\n  \\s*(=|:|;)\n)",
+			"end": "(?=\\=|:|;)",
+			"name": "meta.definition.variable.cvc",
+			"patterns": [
+				{
+					"match": "([A-Za-z$_][\\w$]*)(?=\\s*(\\[\\])*\\s*(;|:|=|,))",
+					"captures": {
+						"1": {
+							"name": "variable.other.definition.cvc"
+						}
+					}
+				},
+				{
+					"include": "#all-types"
+				},
+				{
+					"include": "#code"
+				}
+			]
+		},
+		"variables-local": {
+			"begin": "(?=\\b(var)\\b\\s+[A-Za-z_$][\\w$]*\\s*(=|:|;))",
+			"end": "(?=\\=|:|;)",
+			"name": "meta.definition.variable.local.cvc",
+			"patterns": [
+				{
+					"match": "\\bvar\\b",
+					"name": "storage.type.local.cvc"
+				},
+				{
+					"match": "([A-Za-z$_][\\w$]*)(?=\\s*(\\[\\])*\\s*(=|:|;))",
+					"captures": {
+						"1": {
+							"name": "variable.other.definition.cvc"
+						}
+					}
+				},
+				{
+					"include": "#code"
+				}
+			]
 		}
-	},
-	"scopeName": "cvc",
-	"uuid": "78cd77a2-17ef-40e5-a0fb-416644265f70"
+	}
 }
