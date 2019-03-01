@@ -138,10 +138,11 @@ function runCVC4Command() {
             });
 
             var p = new Promise(resolve => {
-                while (cvc4Token.isCancellationRequested = false) {
-                    setTimeout(() => {
-                        resolve();
-                    }, 1000);
+                // while (cvc4Token.isCancellationRequested == false) 
+                {
+                    // setTimeout(() => {
+                    //     resolve();
+                    // }, 1000);
                 }
             });
 

@@ -38,6 +38,14 @@
 			"title": "Run CVC4",
 			"category": "CVC4"
 		}],
+		"menus": {
+			"commandPalette": [
+				{
+					"command": "extension.runCVC4",
+					"when": "editorLangId == cvc"
+				}
+			]
+		},
         "grammars": [
             {
                 "language": "cvc",
