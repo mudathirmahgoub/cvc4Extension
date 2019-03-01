@@ -17,6 +17,12 @@ import {
     TextDocumentPositionParams
 } from 'vscode-languageserver';
 
+// for running cvc4 as a child process
+import * as child_process from 'child_process';
+
+// for reading cvc4 settings from a json file
+import * as fs from 'fs';
+
 let cvc4Keywords : string[] = "ASSERT|QUERY|CHECKSAT|OPTION|PUSH|POP|POPTO|PUSH_SCOPE|POP_SCOPE|POPTO_SCOPE|RESET|DATATYPE|END|CONTEXT|FORGET|GET_TYPE|CHECK_TYPE|GET_CHILD|GET_OP|GET_VALUE|SUBSTITUTE|DBG|TRACE|UNTRACE|HELP|TRANSFORM|PRINT|PRINT_TYPE|CALL|ECHO|EXIT|INCLUDE|DUMP_PROOF|DUMP_UNSAT_CORE|DUMP_ASSUMPTIONS|DUMP_SIG|DUMP_TCC|DUMP_TCC_ASSUMPTIONS|DUMP_TCC_PROOF|DUMP_CLOSURE|DUMP_CLOSURE_PROOF|WHERE|ASSERTIONS|ASSUMPTIONS|COUNTEREXAMPLE|COUNTERMODEL|ARITH_VAR_ORDER|CONTINUE|RESTART|REC-FUN|AND|BOOLEAN|ELSIF|ELSE|ENDIF|FALSE|IF|IN|INT|LET|IS_IN|NOT|OR|REAL|THEN|TRUE|TYPE|XOR|ARRAY|OF|WITH|SUBTYPE|SET|TUPLE|FORALL|EXISTS|PATTERN|LAMBDA|MOD|DIV|FLOOR|ABS|DIVISIBLE|DISTINCT|BITVECTOR|BVPLUS|BVSUB|BVUDIV|BVSDIV|BVUREM|BVSREM|BVSMOD|BVSHL|BVASHR|BVLSHR|BVUMINUS|BVMULT|BVXOR|BVNAND|BVNOR|BVCOMP|BVXNOR|BVTOINT|INTTOBV|BOOLEXTRACT|IS_INTEGER|BVLT|BVGT|BVLE|BVGE|SX|BVZEROEXTEND|BVREPEAT|BVROTL|BVROTR|BVSLT|BVSGT|BVSLE|BVSGE|JOIN|TRANSPOSE|PRODUCT|TCLOSURE|IDEN|JOIN_IMAGE|STRING|CONCAT|LENGTH|CONTAINS|SUBSTR|CHARAT|INDEXOF|REPLACE|PREFIXOF|SUFFIXOF|STRING_TO_INTEGER|INTEGER_TO_STRING|CARD|HAS_CARD|UNIVERSE".split("|");
 let cvc4CompletionItems : CompletionItem[] = cvc4Keywords.map(keyword => (
     {    
@@ -25,10 +31,8 @@ let cvc4CompletionItems : CompletionItem[] = cvc4Keywords.map(keyword => (
         data: keyword
     })
 );
-// for running cvc4 as a child process
-import * as child_process from 'child_process';
-// for reading cvc4 settings from a json file
-import * as fs from 'fs';
+
+
 
 interface CVC4Settings {
     cvc4Executable: string;
@@ -41,7 +45,7 @@ let cvc4Settings : CVC4Settings;
 try{
     cvc4Settings = JSON.parse(fs.readFileSync('.vscode/cvc4-settings.json', 'utf8'));
     // add parse only to the arguments list if it doesn't include it
-    if (cvc4Settings.cvc4Arguments.indexOf('--parse-only') > -1){
+    if (cvc4Settings.cvc4Arguments.indexOf('--parse-only') == -1){
         cvc4Settings.cvc4Arguments.push('--parse-only');
     }
 }

@@ -4,18 +4,37 @@
  * ------------------------------------------------------------------------------------------ */
 
 import * as path from 'path';
-import { workspace, ExtensionContext } from 'vscode';
+import * as vscode from 'vscode';
 
 import {
     LanguageClient,
     LanguageClientOptions,
     ServerOptions,
-    TransportKind
+    TransportKind,
+    CancellationTokenSource
 } from 'vscode-languageclient';
+
+// for running cvc4 as a child process
+import * as child_process from 'child_process';
+
+
+// for reading cvc4 settings from a json file
+import * as fs from 'fs';
+
+interface CVC4Settings {
+    cvc4Executable: string;
+    cvc4Arguments: string[];
+    isVerbose: boolean;
+}
 
 let client: LanguageClient;
 
-export function activate(context: ExtensionContext) {
+export function activate(context: vscode.ExtensionContext) {
+
+    // register cvc4 commands
+    const command = 'extension.runCVC4';
+    context.subscriptions.push(vscode.commands.registerCommand(command, runCVC4Command));
+
     // The server is implemented in node
     let serverModule = context.asAbsolutePath(
         path.join('server', 'out', 'server.js')
@@ -38,10 +57,10 @@ export function activate(context: ExtensionContext) {
     // Options to control the language client
     let clientOptions: LanguageClientOptions = {
         // Register the server for plain text documents
-        documentSelector: [{ scheme: 'file', language: 'cvc'}],
+        documentSelector: [{ scheme: 'file', language: 'cvc' }],
         synchronize: {
             // Notify the server about file changes to '.clientrc files contained in the workspace
-            fileEvents: workspace.createFileSystemWatcher('**/.clientrc')
+            fileEvents: vscode.workspace.createFileSystemWatcher('**/.clientrc')
         }
     };
 
@@ -62,4 +81,72 @@ export function deactivate(): Thenable<void> | undefined {
         return undefined;
     }
     return client.stop();
+}
+
+function runCVC4Command() {
+
+    let document: vscode.TextDocument = vscode.window.activeTextEditor.document;
+
+    let cvc4Settings: CVC4Settings;
+
+    try {
+        cvc4Settings = JSON.parse(fs.readFileSync('.vscode/cvc4-settings.json', 'utf8'));
+        // remove parse-only 
+        if (cvc4Settings.cvc4Arguments.indexOf('--parse-only') > -1) {
+            delete cvc4Settings.cvc4Arguments['--parse-only'];
+        }
+    }
+    catch (error) {
+        // create a json file for cvc4 settings
+        let isWindows: boolean = process.platform === "win32";
+        let cvc4Executable: string;
+        cvc4Executable = 'cvc4';
+
+        // default CVC4 arguments
+        const cvc4Arguments: string[] = ['--lang', 'cvc4', '--incremental'];
+        cvc4Settings = { cvc4Executable: cvc4Executable, cvc4Arguments: cvc4Arguments, isVerbose: false };
+        let json = JSON.stringify(cvc4Settings, null, 4);
+        fs.writeFile('.vscode/cvc4-settings.json', json, 'utf8', () => { });
+    }
+
+
+    
+    var child: child_process.ChildProcess = child_process.spawn(cvc4Settings.cvc4Executable, cvc4Settings.cvc4Arguments);
+    child.stdin.setDefaultEncoding('utf-8');
+    child.stdout.on('data', (data) => { cvc4OutputChannel.append(data.toString()); });
+    child.stderr.on('data', (data) => { cvc4OutputChannel.append(data.toString()); });
+    child.stdin.write(document.getText() + '\n');
+    child.stdin.end();
+
+    let cvc4Progress: vscode.Progress<{ message?: string; increment?: number }>;
+    let cvc4Token: vscode.CancellationToken;
+    let cvc4OutputChannel: vscode.OutputChannel = vscode.window.createOutputChannel("cvc4");
+    cvc4OutputChannel.show();
+    vscode.window.withProgress({
+        location: vscode.ProgressLocation.Notification,
+        title: "Running CVC4",
+        cancellable: true
+    }, (progress: vscode.Progress<{ message?: string; increment?: number }>,
+        token: vscode.CancellationToken) => {
+
+            cvc4Progress = progress;
+            cvc4Token = token;
+
+            token.onCancellationRequested(() => {
+                console.log("User canceled the process");
+                child.kill();
+            });
+
+            var p = new Promise(resolve => {
+                while (cvc4Token.isCancellationRequested = false) {
+                    setTimeout(() => {
+                        resolve();
+                    }, 1000);
+                }
+            });
+
+            return p;
+        });
+
+    child.on('exit', (data) => {cvc4Token.isCancellationRequested = true;});
 }

@@ -33,6 +33,11 @@
                 "configuration": "./language-configuration.json"
             }
         ],
+		"commands": [{
+			"command": "extension.runCVC4",
+			"title": "Run CVC4",
+			"category": "CVC4"
+		}],
         "grammars": [
             {
                 "language": "cvc",
