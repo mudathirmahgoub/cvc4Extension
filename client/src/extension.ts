@@ -14,18 +14,40 @@ import {
     CancellationTokenSource
 } from 'vscode-languageclient';
 
-// for running cvc4 as a child process
-import * as child_process from 'child_process';
-
 
 // for reading cvc4 settings from a json file
 import * as fs from 'fs';
+import { doc } from './test/helper';
 
 interface CVC4Settings {
     cvc4Executable: string;
     cvc4Arguments: string[];
     isVerbose: boolean;
 }
+
+let cvc4Settings: CVC4Settings;
+
+try {
+    cvc4Settings = JSON.parse(fs.readFileSync('.vscode/cvc4-settings.json', 'utf8'));
+    // remove parse-only 
+    if (cvc4Settings.cvc4Arguments.indexOf('--parse-only') > -1) {
+        delete cvc4Settings.cvc4Arguments['--parse-only'];
+    }
+}
+catch (error) {
+    // create a json file for cvc4 settings        
+    let cvc4Executable: string;
+    cvc4Executable = 'cvc4';
+
+    // default CVC4 arguments
+    const cvc4Arguments: string[] = ['--lang', 'cvc4', '--incremental'];
+    cvc4Settings = { cvc4Executable: cvc4Executable, cvc4Arguments: cvc4Arguments, isVerbose: false };
+    let json = JSON.stringify(cvc4Settings, null, 4);
+    fs.writeFile('.vscode/cvc4-settings.json', json, 'utf8', () => { });
+}
+
+let cvc4Terminal: vscode.Terminal = vscode.window.createTerminal("cvc4");
+cvc4Terminal.sendText(cvc4Settings.cvc4Executable + " " + cvc4Settings.cvc4Arguments.join(' '));
 
 let client: LanguageClient;
 
@@ -66,8 +88,8 @@ export function activate(context: vscode.ExtensionContext) {
 
     // Create the language client and start the client.
     client = new LanguageClient(
-        'languageServerExample',
-        'Language Server Example',
+        'cvc4',
+        'CVC4 extension',
         serverOptions,
         clientOptions
     );
@@ -86,69 +108,7 @@ export function deactivate(): Thenable<void> | undefined {
 function runCVC4Command() {
 
     let document: vscode.TextDocument = vscode.window.activeTextEditor.document;
-
-    let cvc4Settings: CVC4Settings;
-
-    try {
-        cvc4Settings = JSON.parse(fs.readFileSync('.vscode/cvc4-settings.json', 'utf8'));
-        // remove parse-only 
-        if (cvc4Settings.cvc4Arguments.indexOf('--parse-only') > -1) {
-            delete cvc4Settings.cvc4Arguments['--parse-only'];
-        }
-    }
-    catch (error) {
-        // create a json file for cvc4 settings        
-        let cvc4Executable: string;
-        cvc4Executable = 'cvc4';
-
-        // default CVC4 arguments
-        const cvc4Arguments: string[] = ['--lang', 'cvc4', '--incremental'];
-        cvc4Settings = { cvc4Executable: cvc4Executable, cvc4Arguments: cvc4Arguments, isVerbose: false };
-        let json = JSON.stringify(cvc4Settings, null, 4);
-        fs.writeFile('.vscode/cvc4-settings.json', json, 'utf8', () => { });
-    }
-
-
-
-    var child: child_process.ChildProcess = child_process.spawn(cvc4Settings.cvc4Executable, cvc4Settings.cvc4Arguments);
-    child.stdin.setDefaultEncoding('utf-8');
-    child.stdout.on('data', (data) => { cvc4OutputChannel.append(data.toString()); });
-    child.stderr.on('data', (data) => { cvc4OutputChannel.append(data.toString()); });
-    child.stdin.write(document.getText() + '\n');
-    child.stdin.end();
-
-    // https://stackoverflow.com/questions/30763496/how-to-promisify-nodes-child-process-exec-and-child-process-execfile-functions
-    function promiseFromChildProcess(child) {
-        return new Promise(function (resolve, reject) {            
-            child.addListener("exit", resolve);
-        });
-    }
-
-    let cvc4Progress: vscode.Progress<{ message?: string; increment?: number }>;
-    let cvc4Token: vscode.CancellationToken;
-    let cvc4OutputChannel: vscode.OutputChannel = vscode.window.createOutputChannel("cvc4");
-    cvc4OutputChannel.show();
-    vscode.window.withProgress({
-        location: vscode.ProgressLocation.Notification,
-        title: "Running CVC4",
-        cancellable: true
-    }, (progress: vscode.Progress<{ message?: string; increment?: number }>,
-        token: vscode.CancellationToken) => {
-
-            cvc4Progress = progress;
-            cvc4Token = token;
-
-            token.onCancellationRequested(() => {
-                console.log("User canceled the process");
-                child.kill();
-            });
-
-            var p = new Promise((resolve, reject) => {
-                return promiseFromChildProcess(child);
-            });
-
-            return p;
-        });
-
-    child.on('exit', (data) => { cvc4Token.isCancellationRequested = true; });
+    cvc4Terminal.sendText('RESET;');
+    cvc4Terminal.show();    
+    cvc4Terminal.sendText(document.getText());    
 }

@@ -45,7 +45,13 @@
 					"when": "editorLangId == cvc"
 				}
 			]
-		},
+        },
+        "keybindings": [{
+            "command": "extension.runCVC4",
+            "key": "ctrl+enter",
+            "mac": "cmd+enter",
+            "when": "editorTextFocus"
+        }],
         "grammars": [
             {
                 "language": "cvc",
