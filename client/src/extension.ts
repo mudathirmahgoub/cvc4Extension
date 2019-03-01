@@ -97,8 +97,7 @@ function runCVC4Command() {
         }
     }
     catch (error) {
-        // create a json file for cvc4 settings
-        let isWindows: boolean = process.platform === "win32";
+        // create a json file for cvc4 settings        
         let cvc4Executable: string;
         cvc4Executable = 'cvc4';
 
@@ -110,13 +109,20 @@ function runCVC4Command() {
     }
 
 
-    
+
     var child: child_process.ChildProcess = child_process.spawn(cvc4Settings.cvc4Executable, cvc4Settings.cvc4Arguments);
     child.stdin.setDefaultEncoding('utf-8');
     child.stdout.on('data', (data) => { cvc4OutputChannel.append(data.toString()); });
     child.stderr.on('data', (data) => { cvc4OutputChannel.append(data.toString()); });
     child.stdin.write(document.getText() + '\n');
     child.stdin.end();
+
+    // https://stackoverflow.com/questions/30763496/how-to-promisify-nodes-child-process-exec-and-child-process-execfile-functions
+    function promiseFromChildProcess(child) {
+        return new Promise(function (resolve, reject) {            
+            child.addListener("exit", resolve);
+        });
+    }
 
     let cvc4Progress: vscode.Progress<{ message?: string; increment?: number }>;
     let cvc4Token: vscode.CancellationToken;
@@ -137,17 +143,12 @@ function runCVC4Command() {
                 child.kill();
             });
 
-            var p = new Promise(resolve => {
-                // while (cvc4Token.isCancellationRequested == false) 
-                {
-                    // setTimeout(() => {
-                    //     resolve();
-                    // }, 1000);
-                }
+            var p = new Promise((resolve, reject) => {
+                return promiseFromChildProcess(child);
             });
 
             return p;
         });
 
-    child.on('exit', (data) => {cvc4Token.isCancellationRequested = true;});
+    child.on('exit', (data) => { cvc4Token.isCancellationRequested = true; });
 }
