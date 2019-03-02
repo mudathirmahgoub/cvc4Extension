@@ -14,40 +14,19 @@ import {
     CancellationTokenSource
 } from 'vscode-languageclient';
 
-
-// for reading cvc4 settings from a json file
-import * as fs from 'fs';
-import { doc } from './test/helper';
-
 interface CVC4Settings {
-    cvc4Executable: string;
-    cvc4Arguments: string[];
+    executable: string;
+    arguments: string[];
     isVerbose: boolean;
 }
 
-let cvc4Settings: CVC4Settings;
+let currentDocument: vscode.TextDocument = vscode.window.activeTextEditor.document;
 
-try {
-    cvc4Settings = JSON.parse(fs.readFileSync('.vscode/cvc4-settings.json', 'utf8'));
-    // remove parse-only 
-    if (cvc4Settings.cvc4Arguments.indexOf('--parse-only') > -1) {
-        delete cvc4Settings.cvc4Arguments['--parse-only'];
-    }
-}
-catch (error) {
-    // create a json file for cvc4 settings        
-    let cvc4Executable: string;
-    cvc4Executable = 'cvc4';
-
-    // default CVC4 arguments
-    const cvc4Arguments: string[] = ['--lang', 'cvc4', '--incremental'];
-    cvc4Settings = { cvc4Executable: cvc4Executable, cvc4Arguments: cvc4Arguments, isVerbose: false };
-    let json = JSON.stringify(cvc4Settings, null, 4);
-    fs.writeFile('.vscode/cvc4-settings.json', json, 'utf8', () => { });
-}
+let cvc4Settings = vscode.workspace.getConfiguration('cvc4');
 
 let cvc4Terminal: vscode.Terminal = vscode.window.createTerminal("cvc4");
-cvc4Terminal.sendText(cvc4Settings.cvc4Executable + " " + cvc4Settings.cvc4Arguments.join(' '));
+
+cvc4Terminal.sendText(cvc4Settings.executable + " " + cvc4Settings.arguments.join(' '));
 
 let client: LanguageClient;
 
@@ -106,9 +85,7 @@ export function deactivate(): Thenable<void> | undefined {
 }
 
 function runCVC4Command() {
-
-    let document: vscode.TextDocument = vscode.window.activeTextEditor.document;
     cvc4Terminal.sendText('RESET;');
     cvc4Terminal.show();    
-    cvc4Terminal.sendText(document.getText());    
+    cvc4Terminal.sendText(currentDocument.getText());    
 }
