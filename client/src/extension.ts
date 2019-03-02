@@ -12,7 +12,6 @@ import {
     ServerOptions,
     TransportKind
 } from 'vscode-languageclient';
-import { editor } from './test/helper';
 
 let currentDocument: vscode.TextDocument = vscode.window.activeTextEditor.document;
 
@@ -29,7 +28,13 @@ export function activate(context: vscode.ExtensionContext) {
     // register cvc4 commands
     const command = 'extension.runCVC4';
     context.subscriptions.push(vscode.commands.registerCommand(command, runCVC4Command));
-
+    // rerun the terminal when cvc4 settings are changed
+    vscode.workspace.onDidChangeConfiguration(event => {
+        cvc4Settings = vscode.workspace.getConfiguration('cvc4');
+        cvc4Terminal.dispose();
+        cvc4Terminal = vscode.window.createTerminal("cvc4");
+        cvc4Terminal.sendText(cvc4Settings.executable + " " + cvc4Settings.arguments.join(' '));
+    });
     // The server is implemented in node
     let serverModule = context.asAbsolutePath(
         path.join('server', 'out', 'server.js')
