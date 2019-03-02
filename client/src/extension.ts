@@ -10,15 +10,9 @@ import {
     LanguageClient,
     LanguageClientOptions,
     ServerOptions,
-    TransportKind,
-    CancellationTokenSource
+    TransportKind
 } from 'vscode-languageclient';
-
-interface CVC4Settings {
-    executable: string;
-    arguments: string[];
-    isVerbose: boolean;
-}
+import { editor } from './test/helper';
 
 let currentDocument: vscode.TextDocument = vscode.window.activeTextEditor.document;
 
@@ -85,7 +79,18 @@ export function deactivate(): Thenable<void> | undefined {
 }
 
 function runCVC4Command() {
-    cvc4Terminal.sendText('RESET;');
-    cvc4Terminal.show();    
-    cvc4Terminal.sendText(currentDocument.getText());    
+    cvc4Terminal.show(true);
+    const editor = vscode.window.activeTextEditor;
+    if (editor.selection.isEmpty) {
+        cvc4Terminal.sendText('RESET;');
+        // send the whole text
+        cvc4Terminal.sendText(currentDocument.getText());
+    }
+    else {
+        if (editor.selection.start.line == 0 &&
+            editor.selection.start.character == 0) {
+            cvc4Terminal.sendText('RESET;');
+        }
+        cvc4Terminal.sendText(currentDocument.getText(editor.selection));
+    }
 }
