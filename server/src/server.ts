@@ -147,6 +147,7 @@ documents.onDidClose(e => {
 documents.onDidChangeContent(async change => {
     // get cvc4 settings from the client
     cvc4Settings = await getDocumentSettings(change.document.uri);
+    cvc4Settings.arguments.push('--parse-only');
     validateTextDocument(change.document);       
 });
 

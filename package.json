@@ -96,8 +96,7 @@
                     "default": [
                         "--lang",
                         "cvc4",
-                        "--incremental",
-                        "--parse-only",
+                        "--incremental",                        
                         "--strict-parsing"
                     ],
                     "description": "CVC4 arguments"
