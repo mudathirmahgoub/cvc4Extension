@@ -61,7 +61,7 @@
         ],
         "configuration": {
             "type": "object",
-            "title": "Example configuration",
+            "title": "CVC4",
             "properties": {
                 "languageServerExample.maxNumberOfProblems": {
                     "scope": "resource",
@@ -79,6 +79,30 @@
                     ],
                     "default": "off",
                     "description": "Traces the communication between VS Code and the language server."
+                },
+				"cvc4.executable": {
+                    "scope": "resource",
+                    "type": "string",
+                    "default": "cvc4",
+                    "description": "Specifies the path of cvc4 executable."
+                },
+                "cvc4.arguments": {
+                    "scope": "resource",
+                    "type": "array",
+                    "default": [
+                        "--lang",
+                        "cvc4",
+                        "--incremental",
+                        "--parse-only",
+                        "--strict-parsing"
+                    ],
+                    "description": "CVC4 arguments"
+                },
+                "cvc4.isVerbose": {
+                    "scope": "resource",
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Specifies whether to show verbose text"
                 }
             }
         }
