@@ -144,12 +144,10 @@ documents.onDidClose(e => {
 
 // The content of a text document has changed. This event is emitted
 // when the text document first opened or when its content has changed.
-documents.onDidChangeContent(change => {
+documents.onDidChangeContent(async change => {
     // get cvc4 settings from the client
-    getDocumentSettings(change.document.uri).then((settings) => {
-        cvc4Settings = settings;
-        validateTextDocument(change.document);
-    });    
+    cvc4Settings = await getDocumentSettings(change.document.uri);
+    validateTextDocument(change.document);       
 });
 
 async function validateTextDocument(textDocument: TextDocument): Promise<void> {
