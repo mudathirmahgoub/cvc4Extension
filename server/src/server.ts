@@ -32,19 +32,27 @@ let cvc4CompletionItems: CompletionItem[] = cvc4Keywords.map(keyword => (
 
 
 interface CVC4Settings {
-    cvc4Executable: string;
-    cvc4Arguments: string[];
+    executable: string;
+    arguments: string[];
     isVerbose: boolean;
 }
 
+// default cvc4 settings
+let cvc4DefaultSettings: CVC4Settings = {
+    executable: "cvc4",
+    arguments: [
+        "--lang",
+        "cvc4",
+        "--incremental",
+        "--parse-only",
+        "--strict-parsing"
+    ],
+    isVerbose: false
+};
+
+// current cvc4 settings
 let cvc4Settings: CVC4Settings;
-let cvc4Executable: string;
-cvc4Executable = 'cvc4';
-
-// default CVC4 arguments
-const cvc4Arguments: string[] = ['--lang', 'cvc4', '--incremental', '--parse-only'];
-cvc4Settings = { cvc4Executable: cvc4Executable, cvc4Arguments: cvc4Arguments, isVerbose: false };
-
+// parsing errors
 let cvc4ErrorOutput: string[] = [];
 
 // Create a connection for the server. The connection uses Node's IPC as a transport.
@@ -97,27 +105,19 @@ connection.onInitialized(() => {
     }
 });
 
-// The example settings
-interface ExampleSettings {
-    maxNumberOfProblems: number;
-}
-
 // The global settings, used when the `workspace/configuration` request is not supported by the client.
-// Please note that this is not the case when using this server with the client provided in this example
-// but could happen with other clients.
-const defaultSettings: ExampleSettings = { maxNumberOfProblems: 1000 };
-let globalSettings: ExampleSettings = defaultSettings;
+let globalSettings: CVC4Settings = cvc4DefaultSettings;
 
 // Cache the settings of all open documents
-let documentSettings: Map<string, Thenable<ExampleSettings>> = new Map();
+let documentSettings: Map<string, Thenable<CVC4Settings>> = new Map();
 
 connection.onDidChangeConfiguration(change => {
     if (hasConfigurationCapability) {
         // Reset all cached document settings
         documentSettings.clear();
     } else {
-        globalSettings = <ExampleSettings>(
-            (change.settings.languageServerExample || defaultSettings)
+        globalSettings = <CVC4Settings>(
+            (change.settings.cvc4 || cvc4DefaultSettings)
         );
     }
 
@@ -125,16 +125,13 @@ connection.onDidChangeConfiguration(change => {
     documents.all().forEach(validateTextDocument);
 });
 
-function getDocumentSettings(resource: string): Thenable<ExampleSettings> {
+function getDocumentSettings(resource: string): Thenable<CVC4Settings> {
     if (!hasConfigurationCapability) {
         return Promise.resolve(globalSettings);
     }
     let result = documentSettings.get(resource);
     if (!result) {
-        result = connection.workspace.getConfiguration({
-            scopeUri: resource,
-            section: 'languageServerExample'
-        });
+        result = connection.workspace.getConfiguration({ section: 'cvc4' });
         documentSettings.set(resource, result);
     }
     return result;
@@ -148,14 +145,18 @@ documents.onDidClose(e => {
 // The content of a text document has changed. This event is emitted
 // when the text document first opened or when its content has changed.
 documents.onDidChangeContent(change => {
-    validateTextDocument(change.document);
+    // get cvc4 settings from the client
+    getDocumentSettings(change.document.uri).then((settings) => {
+        cvc4Settings = settings;
+        validateTextDocument(change.document);
+    });    
 });
 
 async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 
     cvc4ErrorOutput = [];
 
-    var child: child_process.ChildProcess = child_process.spawn(cvc4Settings.cvc4Executable, cvc4Settings.cvc4Arguments);
+    var child: child_process.ChildProcess = child_process.spawn(cvc4Settings.executable, cvc4Settings.arguments);
     child.stdin.setDefaultEncoding('utf-8');
     child.stdout.on('data', (data) => { cvc4ErrorOutput.push(data.toString()); });
     child.stderr.on('data', (data) => { cvc4ErrorOutput.push(data.toString()); });

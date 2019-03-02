@@ -3,7 +3,7 @@
     "description": "CVC4 extension",
     "author": "University of Iowa",
     "license": "MIT",
-    "version": "1.0.0",
+    "version": "0.5.0",
     "repository": {
         "type": "git",
         "url": "https://github.com/mudathirmahgoub/cvc4extension"
@@ -33,25 +33,29 @@
                 "configuration": "./language-configuration.json"
             }
         ],
-		"commands": [{
-			"command": "extension.runCVC4",
-			"title": "Run CVC4",
-			"category": "CVC4"
-		}],
-		"menus": {
-			"commandPalette": [
-				{
-					"command": "extension.runCVC4",
-					"when": "editorLangId == cvc"
-				}
-			]
+        "commands": [
+            {
+                "command": "extension.runCVC4",
+                "title": "Run CVC4",
+                "category": "CVC4"
+            }
+        ],
+        "menus": {
+            "commandPalette": [
+                {
+                    "command": "extension.runCVC4",
+                    "when": "editorLangId == cvc"
+                }
+            ]
         },
-        "keybindings": [{
-            "command": "extension.runCVC4",
-            "key": "ctrl+enter",
-            "mac": "cmd+enter",
-            "when": "editorTextFocus"
-        }],
+        "keybindings": [
+            {
+                "command": "extension.runCVC4",
+                "key": "ctrl+enter",
+                "mac": "cmd+enter",
+                "when": "editorTextFocus"
+            }
+        ],
         "grammars": [
             {
                 "language": "cvc",
@@ -80,7 +84,7 @@
                     "default": "off",
                     "description": "Traces the communication between VS Code and the language server."
                 },
-				"cvc4.executable": {
+                "cvc4.executable": {
                     "scope": "resource",
                     "type": "string",
                     "default": "cvc4",
@@ -108,7 +112,7 @@
         }
     },
     "scripts": {
-        "vscode:prepublish": "cd client && npm run update-vscode && cd .. && npm run compile",
+        "vscode:prepublish": "cd client && npm run update-vscode && cd .. && cd server && npm run update-vscode && cd .. && npm run compile",
         "compile": "tsc -b",
         "watch": "tsc -b -w",
         "postinstall": "cd client && npm install && cd ../server && npm install && cd ..",
