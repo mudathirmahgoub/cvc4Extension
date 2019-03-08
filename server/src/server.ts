@@ -21,7 +21,7 @@ import {
 import * as child_process from 'child_process';
 
 let cvc4Keywords: string[] = "ASSERT|QUERY|CHECKSAT|OPTION|PUSH|POP|POPTO|PUSH_SCOPE|POP_SCOPE|POPTO_SCOPE|RESET|DATATYPE|END|CONTEXT|FORGET|GET_TYPE|CHECK_TYPE|GET_CHILD|GET_OP|GET_VALUE|SUBSTITUTE|DBG|TRACE|UNTRACE|HELP|TRANSFORM|PRINT|PRINT_TYPE|CALL|ECHO|EXIT|INCLUDE|DUMP_PROOF|DUMP_UNSAT_CORE|DUMP_ASSUMPTIONS|DUMP_SIG|DUMP_TCC|DUMP_TCC_ASSUMPTIONS|DUMP_TCC_PROOF|DUMP_CLOSURE|DUMP_CLOSURE_PROOF|WHERE|ASSERTIONS|ASSUMPTIONS|COUNTEREXAMPLE|COUNTERMODEL|ARITH_VAR_ORDER|CONTINUE|RESTART|REC-FUN|AND|BOOLEAN|ELSIF|ELSE|ENDIF|FALSE|IF|IN|INT|LET|IS_IN|NOT|OR|REAL|THEN|TRUE|TYPE|XOR|ARRAY|OF|WITH|SUBTYPE|SET|TUPLE|FORALL|EXISTS|PATTERN|LAMBDA|MOD|DIV|FLOOR|ABS|DIVISIBLE|DISTINCT|BITVECTOR|BVPLUS|BVSUB|BVUDIV|BVSDIV|BVUREM|BVSREM|BVSMOD|BVSHL|BVASHR|BVLSHR|BVUMINUS|BVMULT|BVXOR|BVNAND|BVNOR|BVCOMP|BVXNOR|BVTOINT|INTTOBV|BOOLEXTRACT|IS_INTEGER|BVLT|BVGT|BVLE|BVGE|SX|BVZEROEXTEND|BVREPEAT|BVROTL|BVROTR|BVSLT|BVSGT|BVSLE|BVSGE|JOIN|TRANSPOSE|PRODUCT|TCLOSURE|IDEN|JOIN_IMAGE|STRING|CONCAT|LENGTH|CONTAINS|SUBSTR|CHARAT|INDEXOF|REPLACE|PREFIXOF|SUFFIXOF|STRING_TO_INTEGER|INTEGER_TO_STRING|CARD|HAS_CARD|UNIVERSE".split("|");
-let cvc4CompletionItems: CompletionItem[] = cvc4Keywords.map(keyword => (
+let cvc4CompletionItems: CompletionItem[] = Array.from(new Set(cvc4Keywords)).map(keyword => (
     {
         label: keyword,
         kind: CompletionItemKind.Text,
@@ -30,7 +30,7 @@ let cvc4CompletionItems: CompletionItem[] = cvc4Keywords.map(keyword => (
 );
 
 let smtKeywords : string [] = "assert|get-model|check-sat|set-option|push|pop|declare-datatype|declare-sort|set-logic|set-info|declare-fun|reset|declare-const|get-value|echo|include|sat|assuming|define|rec|funs|rec|define|sort|get|value|get|assignment|get|assertions|get|proof|get|unsat|assumptions|get|unsat|core|exit|reset|reset|assertions|ite|let|set|logic|set|info|meta|info|get|info|set|option|get|option|push|pop|as|const|declare|codatatype|declare|datatype|declare|datatypes|declare|codatatypes|declare|codatatypes|par|is|match|get|model|echo|assert|rewrite|assert|reduction|assert|propagation|declare|sorts|declare|funs|declare|preds|define|declare|const|define|const|simplify|include|get|qe|get|qe|disjunct|declare|heap|emp|synth|fun|synth|inv|check|synth|declare|var|declare|primed|var|constraint|inv|constraint|set|options|Constant|Variable|InputVariable|LocalVariable|pattern|no|pattern|named|quant|inst|max|level|rr|priority|and|distinct|exists|forall|not|or|xor|divisible|bv2nat|int2bv|re.nostr|re.allchar|dt.size|fmf.card|fmf.card.val|inst|closure|emptyset|univset|sep.nil|mkTuple|tupSel|real.pi|zero|zero|NaN|to_fp|to_fp_bv|to_fp_fp|to_fp_real|to_fp_signed|to_fp_unsigned|fp.to_ubv|fp.to_sbv|RNE|RNA|RTP|RTN|RTZ|roundNearestTiesToEven|roundNearestTiesToAway|roundTowardPositive|roundTowardNegative|roundTowardZero|lambda".split("|");
-let smtCompletionItems: CompletionItem[] = smtKeywords.map(keyword => (
+let smtCompletionItems: CompletionItem[] = Array.from(new Set(smtKeywords)).map(keyword => (
     {
         label: keyword,
         kind: CompletionItemKind.Text,
