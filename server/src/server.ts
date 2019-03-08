@@ -40,9 +40,7 @@ interface CVC4Settings {
 // default cvc4 settings
 let cvc4DefaultSettings: CVC4Settings = {
     executable: "cvc4",
-    arguments: [
-        "--lang",
-        "cvc4",
+    arguments: [        
         "--incremental",
         "--parse-only",
         "--strict-parsing"
@@ -154,7 +152,14 @@ documents.onDidChangeContent(async change => {
 async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 
     cvc4ErrorOutput = [];
-
+    let cvcArguments : string[] = [];
+    cvcArguments.push.apply(cvcArguments, cvc4Settings.arguments);
+    if(textDocument.uri.endsWith('.cvc')) {
+        cvcArguments.push.apply(cvcArguments, ["--lang", "cvc4"]);    
+    }
+    if(textDocument.uri.endsWith('.smt2')){
+        cvcArguments.push.apply(cvcArguments, ["--lang", "smtlib2.6"]);    
+    }
     var child: child_process.ChildProcess = child_process.spawn(cvc4Settings.executable, cvc4Settings.arguments);
     child.stdin.setDefaultEncoding('utf-8');
     child.stdout.on('data', (data) => { cvc4ErrorOutput.push(data.toString()); });
@@ -219,7 +224,7 @@ connection.onCompletion(
         // The pass parameter contains the position of the text document in
         // which code complete got requested. For the example we ignore this
         // info and always provide the same completion items.
-        return cvc4CompletionItems;
+        return cvc4CompletionItems;        
     }
 );
 

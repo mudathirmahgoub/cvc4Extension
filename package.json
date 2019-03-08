@@ -56,7 +56,7 @@
             "commandPalette": [
                 {
                     "command": "extension.runCVC4",
-                    "when": "editorLangId == cvc"
+                    "when": "editorLangId == cvc || editorLangId == smt"
                 }
             ]
         },
@@ -83,24 +83,7 @@
         "configuration": {
             "type": "object",
             "title": "CVC4",
-            "properties": {
-                "languageServerExample.maxNumberOfProblems": {
-                    "scope": "resource",
-                    "type": "number",
-                    "default": 100,
-                    "description": "Controls the maximum number of problems produced by the server."
-                },
-                "languageServerExample.trace.server": {
-                    "scope": "window",
-                    "type": "string",
-                    "enum": [
-                        "off",
-                        "messages",
-                        "verbose"
-                    ],
-                    "default": "off",
-                    "description": "Traces the communication between VS Code and the language server."
-                },
+            "properties": {                
                 "cvc4.executable": {
                     "scope": "resource",
                     "type": "string",
@@ -111,8 +94,7 @@
                     "scope": "resource",
                     "type": "array",
                     "default": [
-                        "--lang",
-                        "cvc4",
+                        "--produce-models",
                         "--incremental",                        
                         "--strict-parsing"
                     ],
