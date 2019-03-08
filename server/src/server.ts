@@ -152,13 +152,13 @@ documents.onDidChangeContent(async change => {
 async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 
     cvc4ErrorOutput = [];
-    let cvcArguments : string[] = [];
-    cvcArguments.push.apply(cvcArguments, cvc4Settings.arguments);
+    let cvc4Arguments : string[] = [];
+    cvc4Arguments.push.apply(cvc4Arguments, cvc4Settings.arguments);
     if(textDocument.uri.endsWith('.cvc')) {
-        cvcArguments.push.apply(cvcArguments, ["--lang", "cvc4"]);    
+        cvc4Arguments.push.apply(cvc4Arguments, ["--lang", "cvc4"]);    
     }
     if(textDocument.uri.endsWith('.smt2')){
-        cvcArguments.push.apply(cvcArguments, ["--lang", "smtlib2.6"]);    
+        cvc4Arguments.push.apply(cvc4Arguments, ["--lang", "smtlib2.6"]);    
     }
     var child: child_process.ChildProcess = child_process.spawn(cvc4Settings.executable, cvc4Settings.arguments);
     child.stdin.setDefaultEncoding('utf-8');

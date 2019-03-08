@@ -14,10 +14,16 @@ import {
 } from 'vscode-languageclient';
 
 let cvc4Settings = vscode.workspace.getConfiguration('cvc4');
+let currentLanguage = 'cvc4';
+let lastLanguage = currentLanguage;
+let cvc4Arguments: string[] = [];
+cvc4Arguments.push.apply(cvc4Arguments, cvc4Settings.arguments);
+cvc4Arguments.push.apply(cvc4Arguments, ["--lang", currentLanguage]);
+
 
 let cvc4Terminal: vscode.Terminal = vscode.window.createTerminal("cvc4");
 
-cvc4Terminal.sendText(cvc4Settings.executable + " " + cvc4Settings.arguments.join(' '));
+cvc4Terminal.sendText(cvc4Settings.executable + " " + cvc4Arguments.join(' '));
 
 let client: LanguageClient;
 
@@ -31,7 +37,7 @@ export function activate(context: vscode.ExtensionContext) {
         cvc4Settings = vscode.workspace.getConfiguration('cvc4');
         cvc4Terminal.dispose();
         cvc4Terminal = vscode.window.createTerminal("cvc4");
-        cvc4Terminal.sendText(cvc4Settings.executable + " " + cvc4Settings.arguments.join(' '));
+        cvc4Terminal.sendText(cvc4Settings.executable + " " + cvc4Arguments.join(' '));
     });
     // The server is implemented in node
     let serverModule = context.asAbsolutePath(
@@ -82,18 +88,49 @@ export function deactivate(): Thenable<void> | undefined {
 }
 
 function runCVC4Command() {
-    cvc4Terminal.show(true);
+    // get the current document   
     let currentDocument: vscode.TextDocument = vscode.window.activeTextEditor.document;
+    // declare the reset command
+    let resetCommand: string;
+    // check the extension
+    if (currentDocument.uri.fsPath.endsWith('.cvc')) {
+        currentLanguage = 'cvc4';
+        resetCommand = 'RESET;';
+    }
+    if (currentDocument.uri.fsPath.endsWith('.smt2')) {
+        currentLanguage = 'smtlib2.6';
+        resetCommand = '(reset)\n';
+    }
+    // create a new terminal if the language is different than last one
+    if (currentLanguage != lastLanguage) {
+        lastLanguage = currentLanguage;
+        cvc4Arguments = [];
+        cvc4Arguments.push.apply(cvc4Arguments, cvc4Settings.arguments);
+        cvc4Arguments.push.apply(cvc4Arguments, ["--lang", currentLanguage]);
+        cvc4Terminal.dispose();
+        cvc4Terminal = vscode.window.createTerminal("cvc4");
+        cvc4Terminal.sendText(cvc4Settings.executable + " " + cvc4Arguments.join(' '));
+        // wait for a second for the terminal to launch
+        setTimeout(() => { sendCodeToTerminal(currentDocument, resetCommand); }
+            , 1000);
+    }
+    else {
+        sendCodeToTerminal(currentDocument, resetCommand);
+    }
+}
+
+function sendCodeToTerminal(currentDocument: vscode.TextDocument, resetCommand: string) {
+    cvc4Terminal.show(true);
     const editor = vscode.window.activeTextEditor;
     if (editor.selection.isEmpty) {
-        cvc4Terminal.sendText('RESET;');
+        cvc4Terminal.sendText(resetCommand);
         // send the whole text
         cvc4Terminal.sendText(currentDocument.getText());
     }
     else {
         if (editor.selection.start.line == 0 &&
             editor.selection.start.character == 0) {
-            cvc4Terminal.sendText('RESET;');
+            cvc4Terminal.sendText(resetCommand);
         }
         cvc4Terminal.sendText(currentDocument.getText(editor.selection));
     }
