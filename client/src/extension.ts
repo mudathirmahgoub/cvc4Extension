@@ -13,8 +13,6 @@ import {
     TransportKind
 } from 'vscode-languageclient';
 
-let currentDocument: vscode.TextDocument = vscode.window.activeTextEditor.document;
-
 let cvc4Settings = vscode.workspace.getConfiguration('cvc4');
 
 let cvc4Terminal: vscode.Terminal = vscode.window.createTerminal("cvc4");
@@ -85,6 +83,7 @@ export function deactivate(): Thenable<void> | undefined {
 
 function runCVC4Command() {
     cvc4Terminal.show(true);
+    let currentDocument: vscode.TextDocument = vscode.window.activeTextEditor.document;
     const editor = vscode.window.activeTextEditor;
     if (editor.selection.isEmpty) {
         cvc4Terminal.sendText('RESET;');

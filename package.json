@@ -30,7 +30,19 @@
                 "extensions": [
                     ".cvc"
                 ],
-                "configuration": "./language-configuration.json"
+                "configuration": "./cvc-language-configuration.json"
+            },
+            {
+                "id": "smt",
+                "aliases": [
+                    "smt2",
+                    "smtlib2.6"
+                ],
+                "extensions": [
+                    "smt",
+                    ".smt2"
+                ],
+                "configuration": "./smt-language-configuration.json"
             }
         ],
         "commands": [
@@ -61,6 +73,11 @@
                 "language": "cvc",
                 "scopeName": "cvc",
                 "path": "./cvc4.tmLanguage.json"
+            },
+            {
+                "language": "smt",
+                "scopeName": "smt",
+                "path": "./smt.tmLanguage.json"
             }
         ],
         "configuration": {
