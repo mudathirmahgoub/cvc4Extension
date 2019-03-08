@@ -61,7 +61,8 @@ export function activate(context: vscode.ExtensionContext) {
     // Options to control the language client
     let clientOptions: LanguageClientOptions = {
         // Register the server for plain text documents
-        documentSelector: [{ scheme: 'file', language: 'cvc' }],
+        documentSelector: [ { scheme: 'file', language: 'cvc' },
+                            { scheme: 'file', language: 'smt' }],
         synchronize: {
             // Notify the server about file changes to '.clientrc files contained in the workspace
             fileEvents: vscode.workspace.createFileSystemWatcher('**/.clientrc')

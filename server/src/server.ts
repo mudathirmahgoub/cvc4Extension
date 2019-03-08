@@ -160,7 +160,7 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
     if(textDocument.uri.endsWith('.smt2')){
         cvc4Arguments.push.apply(cvc4Arguments, ["--lang", "smtlib2.6"]);    
     }
-    var child: child_process.ChildProcess = child_process.spawn(cvc4Settings.executable, cvc4Settings.arguments);
+    var child: child_process.ChildProcess = child_process.spawn(cvc4Settings.executable, cvc4Arguments);
     child.stdin.setDefaultEncoding('utf-8');
     child.stdout.on('data', (data) => { cvc4ErrorOutput.push(data.toString()); });
     child.stderr.on('data', (data) => { cvc4ErrorOutput.push(data.toString()); });
