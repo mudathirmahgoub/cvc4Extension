@@ -29,7 +29,14 @@ let cvc4CompletionItems: CompletionItem[] = cvc4Keywords.map(keyword => (
     })
 );
 
-
+let smtKeywords : string [] = "assert|get-model|check-sat|set-option|push|pop|declare-datatype|declare-sort|set-logic|set-info|declare-fun|reset|declare-const|get-value|echo|include|sat|assuming|define|rec|funs|rec|define|sort|get|value|get|assignment|get|assertions|get|proof|get|unsat|assumptions|get|unsat|core|exit|reset|reset|assertions|ite|let|set|logic|set|info|meta|info|get|info|set|option|get|option|push|pop|as|const|declare|codatatype|declare|datatype|declare|datatypes|declare|codatatypes|declare|codatatypes|par|is|match|get|model|echo|assert|rewrite|assert|reduction|assert|propagation|declare|sorts|declare|funs|declare|preds|define|declare|const|define|const|simplify|include|get|qe|get|qe|disjunct|declare|heap|emp|synth|fun|synth|inv|check|synth|declare|var|declare|primed|var|constraint|inv|constraint|set|options|Constant|Variable|InputVariable|LocalVariable|pattern|no|pattern|named|quant|inst|max|level|rr|priority|and|distinct|exists|forall|not|or|xor|divisible|bv2nat|int2bv|re.nostr|re.allchar|dt.size|fmf.card|fmf.card.val|inst|closure|emptyset|univset|sep.nil|mkTuple|tupSel|real.pi|zero|zero|NaN|to_fp|to_fp_bv|to_fp_fp|to_fp_real|to_fp_signed|to_fp_unsigned|fp.to_ubv|fp.to_sbv|RNE|RNA|RTP|RTN|RTZ|roundNearestTiesToEven|roundNearestTiesToAway|roundTowardPositive|roundTowardNegative|roundTowardZero|lambda".split("|");
+let smtCompletionItems: CompletionItem[] = smtKeywords.map(keyword => (
+    {
+        label: keyword,
+        kind: CompletionItemKind.Text,
+        data: keyword
+    })
+);
 
 interface CVC4Settings {
     executable: string;
@@ -224,7 +231,14 @@ connection.onCompletion(
         // The pass parameter contains the position of the text document in
         // which code complete got requested. For the example we ignore this
         // info and always provide the same completion items.
-        return cvc4CompletionItems;        
+        
+        if(_textDocumentPosition.textDocument.uri.endsWith('.cvc')) {
+            return cvc4CompletionItems;
+        }
+        if(_textDocumentPosition.textDocument.uri.endsWith('.smt2')){
+            return smtCompletionItems;
+        }        
+        return []; 
     }
 );
 
