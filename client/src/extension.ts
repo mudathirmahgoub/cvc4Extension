@@ -127,14 +127,13 @@ function runCVC4Command() {
     }
 }
 
-function sendCodeToTerminal(currentDocument: vscode.TextDocument, resetCommand: string) {
-    cvc4Terminal.show(true);
+function sendCodeToTerminal(currentDocument: vscode.TextDocument, resetCommand: string) {    
     // get the active text editor
     const editor = vscode.window.activeTextEditor;
     // check the extension of the active text document
     if (editor.document.uri.fsPath.endsWith('.smt2') ||
         editor.document.uri.fsPath.endsWith('.cvc')) {
-
+            cvc4Terminal.show(true);
         // send the reset command when the cursor is on the first line
         if (editor.selection.start.line == 0) {
             cvc4Terminal.sendText(resetCommand);
