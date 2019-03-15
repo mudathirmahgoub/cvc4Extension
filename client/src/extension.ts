@@ -127,7 +127,7 @@ function sendCodeToTerminal(currentDocument: vscode.TextDocument, resetCommand: 
     // check the extension of the active text document
     if (editor.document.uri.fsPath.endsWith('.smt2') ||
         editor.document.uri.fsPath.endsWith('.cvc')) {
-        
+
         // send the reset command when the cursor is on the first line
         if (editor.selection.start.line == 0) {
             cvc4Terminal.sendText(resetCommand);
@@ -139,7 +139,10 @@ function sendCodeToTerminal(currentDocument: vscode.TextDocument, resetCommand: 
         }
         // otherwise send the selected text
         else {
-            cvc4Terminal.sendText(currentDocument.getText(editor.selection));
+            let lines = currentDocument.getText(editor.selection).split('\n');
+            lines.forEach(function (line: string) {
+                cvc4Terminal.sendText(line);
+            });
         }
     }
 }
