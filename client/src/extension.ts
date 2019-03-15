@@ -61,8 +61,8 @@ export function activate(context: vscode.ExtensionContext) {
     // Options to control the language client
     let clientOptions: LanguageClientOptions = {
         // Register the server for plain text documents
-        documentSelector: [ { scheme: 'file', language: 'cvc' },
-                            { scheme: 'file', language: 'smt' }],
+        documentSelector: [{ scheme: 'file', language: 'cvc' },
+        { scheme: 'file', language: 'smt' }],
         synchronize: {
             // Notify the server about file changes to '.clientrc files contained in the workspace
             fileEvents: vscode.workspace.createFileSystemWatcher('**/.clientrc')
@@ -122,17 +122,24 @@ function runCVC4Command() {
 
 function sendCodeToTerminal(currentDocument: vscode.TextDocument, resetCommand: string) {
     cvc4Terminal.show(true);
+    // get the active text editor
     const editor = vscode.window.activeTextEditor;
-    if (editor.selection.isEmpty) {
-        cvc4Terminal.sendText(resetCommand);
-        // send the whole text
-        cvc4Terminal.sendText(currentDocument.getText());
-    }
-    else {
-        if (editor.selection.start.line == 0 &&
-            editor.selection.start.character == 0) {
+    // check the extension of the active text document
+    if (editor.document.uri.fsPath.endsWith('.smt2') ||
+        editor.document.uri.fsPath.endsWith('.cvc')) {
+        
+        // send the reset command when the cursor is on the first line
+        if (editor.selection.start.line == 0) {
             cvc4Terminal.sendText(resetCommand);
         }
-        cvc4Terminal.sendText(currentDocument.getText(editor.selection));
+        // send the current line if nothing is selected
+        if (editor.selection.isEmpty) {
+            let lineText = currentDocument.lineAt(editor.selection.start.line).text;
+            cvc4Terminal.sendText(lineText);
+        }
+        // otherwise send the selected text
+        else {
+            cvc4Terminal.sendText(currentDocument.getText(editor.selection));
+        }
     }
 }
