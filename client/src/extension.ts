@@ -22,8 +22,12 @@ cvc4Arguments.push.apply(cvc4Arguments, ["--lang", currentLanguage]);
 
 
 let cvc4Terminal: vscode.Terminal = vscode.window.createTerminal("cvc4");
-
 cvc4Terminal.sendText(cvc4Settings.executable + " " + cvc4Arguments.join(' '));
+vscode.window.onDidCloseTerminal(closedTerminal => {
+    if (closedTerminal == cvc4Terminal) {
+        cvc4Terminal = undefined;
+    }
+});
 
 let client: LanguageClient;
 
@@ -103,12 +107,15 @@ function runCVC4Command() {
         resetCommand = '(reset)\n';
     }
     // create a new terminal if the language is different than last one
-    if (currentLanguage != lastLanguage) {
+    if (cvc4Terminal == undefined || currentLanguage != lastLanguage) {
         lastLanguage = currentLanguage;
         cvc4Arguments = [];
         cvc4Arguments.push.apply(cvc4Arguments, cvc4Settings.arguments);
         cvc4Arguments.push.apply(cvc4Arguments, ["--lang", currentLanguage]);
-        cvc4Terminal.dispose();
+        // dispose the terminal if it is not disposed
+        if (cvc4Terminal != undefined) {
+            cvc4Terminal.dispose();
+        }
         cvc4Terminal = vscode.window.createTerminal("cvc4");
         cvc4Terminal.sendText(cvc4Settings.executable + " " + cvc4Arguments.join(' '));
         // wait for a second for the terminal to launch
