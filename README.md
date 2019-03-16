@@ -6,7 +6,7 @@ This extension supports CVC4 language for SMT solver [CVC4](http://cvc4.cs.stanf
 
 1. [Download](http://cvc4.cs.stanford.edu/downloads/) the cvc4 binary for your operating system.
 2. Open visual studio code and update the default configuration for cvc4 executable with the cvc4 binary path: `File -> Preferences ->  Settings -> Extensions -> CVC4 -> Executable`. 
-3. Open a (.cvc) file to activate the extension. To run the whole file just press `CTRL + Enter`. If some text is selected, `CTRL + Enter` will only execute that text. An example of cvc4 code is given below.  More examples for cvc and smt languages can be found in the [web interface](http://kind.cs.uiowa.edu:8080/cvc-app/#examples%2Fcvc%2Fstrings) for cvc4. 
+3. Open a cvc4 file (.cvc or .smt2) to activate the extension. To run the whole file just press `CTRL + Enter`. If some text is selected, `CTRL + Enter` will only execute that text. An example of cvc4 code is given below.  More examples for cvc and smt languages can be found in the [web interface](http://kind.cs.uiowa.edu:8080/cvc-app/#examples%2Fcvc%2Fstrings) for cvc4. 
 
  ```
  % EXPECT: sat
