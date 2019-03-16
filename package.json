@@ -3,7 +3,7 @@
     "description": "CVC4 extension",
     "author": "University of Iowa",
     "license": "MIT",
-    "version": "0.5.0",
+    "version": "0.5.1",
     "repository": {
         "type": "git",
         "url": "https://github.com/mudathirmahgoub/cvc4extension"
