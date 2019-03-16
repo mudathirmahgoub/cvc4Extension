@@ -5,8 +5,8 @@ This extension supports CVC4 language for SMT solver [CVC4](http://cvc4.cs.stanf
 # Configuration
 
 1. [Download](http://cvc4.cs.stanford.edu/downloads/) the cvc4 binary for your operating system.
-2. Open visual studio code and update the default configuration for cvc4 executable with the cvc4 binary path: `File -> Preferences ->  Settings -> Extensions -> CVC4 -> Executable`. 
-3. Open a cvc4 file (.cvc or .smt2) to activate the extension. To run the whole file just press `CTRL + Enter`. If some text is selected, `CTRL + Enter` will only execute that text. An example of cvc4 code is given below.  More examples for cvc and smt languages can be found in the [web interface](http://kind.cs.uiowa.edu:8080/cvc-app/#examples%2Fcvc%2Fstrings) for cvc4. 
+2. Open visual studio code and update the default configuration for cvc4 executable using the *full path* of cvc4 binary (`~` wouldn't work): `File -> Preferences ->  Settings -> Extensions -> CVC4 -> Executable`. 
+3. Open a cvc4 file (.cvc or .smt2) to activate the extension. To run the whole file just press `SHIFT + Enter`. If some text is selected, `CTRL + Enter` will execute the selected text. If no text is selected, the current line is executed. Below are 2 examples: one for cvc language and one for and smt-lib language.  More examples for can be found in the [web interface](http://kind.cs.uiowa.edu:8080/cvc-app) for cvc4. 
 
  ```
  % EXPECT: sat
@@ -22,6 +22,20 @@ ASSERT LENGTH( y ) >= 3;
 
 CHECKSAT;
 COUNTERMODEL;
+ ```
+
+```
+(set-logic ALL)
+(set-option :produce-models true)
+(declare-fun x () Int)
+(declare-fun y () Int)
+(declare-fun z () Int)
+
+(assert (distinct x y z))
+(assert (= (+ x y) z))
+
+(check-sat)
+(get-model)
  ```
 
 ## Structure
