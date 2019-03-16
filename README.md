@@ -61,4 +61,4 @@ COUNTERMODEL;
 - Select `Launch Client` from the drop down.
 - Run the launch config.
 - If you want to debug the server as well use the launch configuration `Attach to Server`
-- In the [Extension Development Host] instance of VSCode, open a cvc4 (.cvc4) document.
+- In the [Extension Development Host] instance of VSCode, open cvc4 file (either .cvc4 or .smt2) document, write some code and press `SHIFT + Enter` to execute the code. 
