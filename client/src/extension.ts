@@ -35,7 +35,10 @@ export function activate(context: vscode.ExtensionContext) {
 
     // register cvc4 commands
     const runSelectionCommand = 'cvc4.runSelection';
-    context.subscriptions.push(vscode.commands.registerCommand(runSelectionCommand, runCVC4Command));
+    context.subscriptions.push(vscode.commands.registerCommand(runSelectionCommand, runSelectionHandler));
+    const runCommand = 'cvc4.run';
+    context.subscriptions.push(vscode.commands.registerCommand(runCommand, runHandler));
+
     // rerun the terminal when cvc4 settings are changed
     vscode.workspace.onDidChangeConfiguration(event => {
         cvc4Settings = vscode.workspace.getConfiguration('cvc4');
@@ -92,7 +95,14 @@ export function deactivate(): Thenable<void> | undefined {
     return client.stop();
 }
 
-function runCVC4Command() {
+function runSelectionHandler() {
+    sendText(selectText);
+}
+function runHandler() {
+    sendText(selectAllText);
+}
+
+function sendText(callback: (currentDocument: vscode.TextDocument, resetCommand: string) => void) {
     // get the current document   
     let currentDocument: vscode.TextDocument = vscode.window.activeTextEditor.document;
     // declare the reset command
@@ -119,15 +129,15 @@ function runCVC4Command() {
         cvc4Terminal = vscode.window.createTerminal("cvc4");
         cvc4Terminal.sendText(cvc4Settings.executable + " " + cvc4Arguments.join(' '));
         // wait for a second for the terminal to launch
-        setTimeout(() => { sendCodeToTerminal(currentDocument, resetCommand); }
+        setTimeout(() => { callback(currentDocument, resetCommand); }
             , 1000);
     }
     else {
-        sendCodeToTerminal(currentDocument, resetCommand);
+        callback(currentDocument, resetCommand);
     }
 }
 
-function sendCodeToTerminal(currentDocument: vscode.TextDocument, resetCommand: string) {
+function selectText(currentDocument: vscode.TextDocument, resetCommand: string) {
     // get the active text editor
     const editor = vscode.window.activeTextEditor;
     // check the extension of the active text document
@@ -150,5 +160,19 @@ function sendCodeToTerminal(currentDocument: vscode.TextDocument, resetCommand: 
                 cvc4Terminal.sendText(line);
             });
         }
+    }
+}
+
+function selectAllText(currentDocument: vscode.TextDocument, resetCommand: string) {
+    // get the active text editor
+    const editor = vscode.window.activeTextEditor;
+    // check the extension of the active text document
+    if (editor.document.uri.fsPath.endsWith('.smt2') ||
+        editor.document.uri.fsPath.endsWith('.cvc')) {
+        cvc4Terminal.show(true);
+        // send the reset command when the cursor is on the first line        
+        cvc4Terminal.sendText(resetCommand);        
+        // send the current line if nothing is selected
+        cvc4Terminal.sendText(currentDocument.getText());        
     }
 }
