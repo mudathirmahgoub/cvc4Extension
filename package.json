@@ -47,24 +47,39 @@
         ],
         "commands": [
             {
-                "command": "extension.runCVC4",
-                "title": "Run CVC4",
+                "command": "cvc4.runSelection",
+                "title": "CVC4 send selection",
+                "category": "CVC4"
+            },
+            {
+                "command": "cvc4.run",
+                "title": "CVC4 run",
                 "category": "CVC4"
             }
         ],
         "menus": {
             "commandPalette": [
                 {
-                    "command": "extension.runCVC4",
+                    "command": "cvc4.runSelection",
+                    "when": "editorLangId == cvc || editorLangId == smt"
+                },
+                {
+                    "command": "cvc4.run",
                     "when": "editorLangId == cvc || editorLangId == smt"
                 }
             ]
         },
         "keybindings": [
             {
-                "command": "extension.runCVC4",
+                "command": "cvc4.runSelection",
                 "key": "ctrl+enter",
                 "mac": "cmd+enter",
+                "when": "editorTextFocus"
+            },
+            {
+                "command": "cvc4.run",
+                "key": "shift+enter",
+                "mac": "shift+enter",
                 "when": "editorTextFocus"
             }
         ],
@@ -83,7 +98,7 @@
         "configuration": {
             "type": "object",
             "title": "CVC4",
-            "properties": {                
+            "properties": {
                 "cvc4.executable": {
                     "scope": "resource",
                     "type": "string",
@@ -95,7 +110,7 @@
                     "type": "array",
                     "default": [
                         "--produce-models",
-                        "--incremental",                        
+                        "--incremental",
                         "--strict-parsing"
                     ],
                     "description": "CVC4 arguments"

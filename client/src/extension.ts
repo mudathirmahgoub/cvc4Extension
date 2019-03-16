@@ -34,8 +34,8 @@ let client: LanguageClient;
 export function activate(context: vscode.ExtensionContext) {
 
     // register cvc4 commands
-    const command = 'extension.runCVC4';
-    context.subscriptions.push(vscode.commands.registerCommand(command, runCVC4Command));
+    const runSelectionCommand = 'cvc4.runSelection';
+    context.subscriptions.push(vscode.commands.registerCommand(runSelectionCommand, runCVC4Command));
     // rerun the terminal when cvc4 settings are changed
     vscode.workspace.onDidChangeConfiguration(event => {
         cvc4Settings = vscode.workspace.getConfiguration('cvc4');
@@ -127,13 +127,13 @@ function runCVC4Command() {
     }
 }
 
-function sendCodeToTerminal(currentDocument: vscode.TextDocument, resetCommand: string) {    
+function sendCodeToTerminal(currentDocument: vscode.TextDocument, resetCommand: string) {
     // get the active text editor
     const editor = vscode.window.activeTextEditor;
     // check the extension of the active text document
     if (editor.document.uri.fsPath.endsWith('.smt2') ||
         editor.document.uri.fsPath.endsWith('.cvc')) {
-            cvc4Terminal.show(true);
+        cvc4Terminal.show(true);
         // send the reset command when the cursor is on the first line
         if (editor.selection.start.line == 0) {
             cvc4Terminal.sendText(resetCommand);
