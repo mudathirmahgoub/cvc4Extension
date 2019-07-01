@@ -62,3 +62,5 @@ COUNTERMODEL;
 - Run the launch config.
 - If you want to debug the server as well use the launch configuration `Attach to Server`
 - In the [Extension Development Host] instance of VSCode, open cvc4 file (either .cvc4 or .smt2) document, write some code and press `SHIFT + Enter` to execute the code. 
+
+- To build the extension, run the command `vsce package`.
