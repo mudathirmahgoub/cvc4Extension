@@ -1,6 +1,6 @@
 # CVC4
 
-This extension supports CVC4 language for SMT solver [CVC4](http://cvc4.cs.stanford.edu/web/). The extension activates with (.cvc) files. 
+This extension supports CVC4 language for SMT solver [CVC4](http://cvc4.cs.stanford.edu/web/). The extension activates with (.cvc) and (.smt2) files. 
 
 # Configuration
 
